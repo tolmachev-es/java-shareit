@@ -15,6 +15,8 @@ public class User {
     @NotEmpty
     @NotBlank
     private String name;
+    @NotEmpty
+    @NotBlank
     @Email
     private String email;
 }
