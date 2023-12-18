@@ -2,10 +2,10 @@ package ru.practicum.shareit.user.dao;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.errors.EmailAlreadyExistException;
+import ru.practicum.shareit.user.errors.UserNotFoundException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class InMemoryUserDao implements UserDao {
@@ -19,7 +19,38 @@ public class InMemoryUserDao implements UserDao {
             userMap.put(user.getId(), user);
             return user;
         } else {
-            throw new RuntimeException();
+            throw new EmailAlreadyExistException(String.format("Пользователь с Email %s уже есть в системе",
+                    user.getEmail()));
+        }
+    }
+
+    @Override
+    public User update(User user, long id) {
+        User oldUser = getUserById(id);
+        if(user.getEmail() != null) {
+            Optional<User> userWithSameEmail = getUserByEmail(user.getEmail());
+            if(userWithSameEmail.isPresent() && userWithSameEmail.get().getId() != id) {
+                throw new EmailAlreadyExistException(String.format("Пользователь с Email %s уже есть в системе",
+                        user.getEmail()));
+            } else {
+                oldUser.setEmail(user.getEmail());
+            }
+        }
+        oldUser.setName(user.getName() == null ? oldUser.getName() : user.getName());
+        return oldUser;
+    }
+
+    @Override
+    public List<User> getAll() {
+        return new ArrayList<>(userMap.values());
+    }
+
+    @Override
+    public User getUserById(long id) {
+        if (userMap.containsKey(id)) {
+            return userMap.get(id);
+        } else {
+            throw new UserNotFoundException(String.format("Пользователь с id %s не найден", id));
         }
     }
 

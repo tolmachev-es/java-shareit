@@ -10,6 +10,9 @@ import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -22,4 +25,22 @@ public class UserServiceImpl implements UserService {
     public UserDto create(User user) {
         return UserMapper.toUserDto(userDao.create(user));
     }
+
+    @Override
+    public UserDto update(User user, Long id) {
+        return UserMapper.toUserDto(userDao.update(user, id));
+    }
+
+    @Override
+    public UserDto getById(Long id) {
+        return UserMapper.toUserDto(userDao.getUserById(id));
+    }
+
+    @Override
+    public List<UserDto> getAll() {
+        return userDao.getAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
 }
