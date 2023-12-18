@@ -54,6 +54,12 @@ public class InMemoryUserDao implements UserDao {
         }
     }
 
+    @Override
+    public void deleteById(long id) {
+        getUserById(id);
+        userMap.remove(id);
+    }
+
     public Optional<User> getUserByEmail(String email) {
         return userMap.values().stream()
                 .filter(u -> u.getEmail().equals(email))

@@ -43,4 +43,9 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteById(Long id) {
+        userDao.deleteById(id);
+    }
+
 }
