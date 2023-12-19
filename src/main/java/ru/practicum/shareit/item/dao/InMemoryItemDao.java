@@ -1,15 +1,11 @@
 package ru.practicum.shareit.item.dao;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.item.errors.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.validationGroups.OnCreate;
-import ru.practicum.shareit.item.model.validationGroups.OnUpdate;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryItemDao implements ItemDao {
@@ -31,6 +27,19 @@ public class InMemoryItemDao implements ItemDao {
         } else {
             throw new ItemNotFoundException(String.format("Вещь с id %s не найдена", itemId));
         }
+    }
+
+    @Override
+    public Item update(Item item) {
+        itemMap.put(item.getId(), item);
+        return item;
+    }
+
+    @Override
+    public List<Item> getByOwner(long userId) {
+        return itemMap.values().stream()
+                .filter(i -> i.getOwner().getId() == userId)
+                .collect(Collectors.toList());
     }
 
     private long getId() {
