@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,25 +21,23 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
 
     @Override
-    public UserDto create(User user) {
-        return UserMapper.toUserDto(userDao.create(user));
+    public User create(User user) {
+        return userDao.create(user);
     }
 
     @Override
-    public UserDto update(User user, Long id) {
-        return UserMapper.toUserDto(userDao.update(user, id));
+    public User update(User user, Long id) {
+        return userDao.update(user, id);
     }
 
     @Override
-    public UserDto getById(Long id) {
-        return UserMapper.toUserDto(userDao.getUserById(id));
+    public User getById(Long id) {
+        return userDao.getUserById(id);
     }
 
     @Override
-    public List<UserDto> getAll() {
-        return userDao.getAll().stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+    public List<User> getAll() {
+        return userDao.getAll();
     }
 
     @Override
