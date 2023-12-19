@@ -3,9 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dao.ItemDao;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserDao;
 
@@ -18,10 +16,21 @@ public class ItemServiceImpl implements ItemService {
     private final UserDao userDao;
 
     @Override
-    public ItemDto create(Item item, long userId) {
+    public Item create(Item item, long userId) {
         item.setOwner(userDao.getUserById(userId));
         item.setAvailable(true);
-        return ItemMapper.toItemDto(itemDao.create(item));
+        return itemDao.create(item);
+    }
+
+    @Override
+    public Item update(Item item, long userId, long itemId) {
+        Item oldItem = itemDao.get(userId);
+        if (oldItem.getOwner().getId() == userId) {
+
+        } else {
+
+        }
+        return null;
     }
 
 }
