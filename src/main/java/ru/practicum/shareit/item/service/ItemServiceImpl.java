@@ -45,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getAllByOwner(Long userId) {
+        userDao.getUserById(userId);
         return itemDao.getByOwner(userId);
     }
 
