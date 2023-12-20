@@ -1,14 +1,15 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.validationGroups.UserOnCreate;
-import ru.practicum.shareit.user.dto.validationGroups.UserOnUpdate;
+import ru.practicum.shareit.user.model.validationGroups.UserOnCreate;
+import ru.practicum.shareit.user.model.validationGroups.UserOnUpdate;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 

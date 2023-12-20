@@ -1,8 +1,8 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.model;
 
 import lombok.Data;
-import ru.practicum.shareit.user.dto.validationGroups.UserOnCreate;
-import ru.practicum.shareit.user.dto.validationGroups.UserOnUpdate;
+import ru.practicum.shareit.user.model.validationGroups.UserOnCreate;
+import ru.practicum.shareit.user.model.validationGroups.UserOnUpdate;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
