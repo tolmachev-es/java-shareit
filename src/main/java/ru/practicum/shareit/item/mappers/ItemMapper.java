@@ -8,5 +8,6 @@ import ru.practicum.shareit.item.model.Item;
 @Mapper
 public interface ItemMapper {
     ItemMapper ITEM_MAPPER = Mappers.getMapper(ItemMapper.class);
+
     ItemDto toDto(Item item);
 }

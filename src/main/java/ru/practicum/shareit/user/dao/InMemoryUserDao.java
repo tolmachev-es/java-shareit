@@ -2,9 +2,9 @@ package ru.practicum.shareit.user.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.errors.EmailAlreadyExistException;
 import ru.practicum.shareit.user.errors.UserNotFoundException;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
@@ -16,7 +16,7 @@ public class InMemoryUserDao implements UserDao {
 
     @Override
     public User create(User user) {
-        if(getUserByEmail(user.getEmail()).isEmpty()) {
+        if (getUserByEmail(user.getEmail()).isEmpty()) {
             user.setId(getId());
             userMap.put(user.getId(), user);
             log.info("Добавлен пользователь с id {}", id);
@@ -31,9 +31,9 @@ public class InMemoryUserDao implements UserDao {
     @Override
     public User update(User user, long id) {
         User oldUser = getUserById(id);
-        if(user.getEmail() != null) {
+        if (user.getEmail() != null) {
             Optional<User> userWithSameEmail = getUserByEmail(user.getEmail());
-            if(userWithSameEmail.isPresent() && userWithSameEmail.get().getId() != id) {
+            if (userWithSameEmail.isPresent() && userWithSameEmail.get().getId() != id) {
                 log.info("Пользователь с таким email уже существует. Email не обновлен");
                 throw new EmailAlreadyExistException(String.format("Пользователь с Email %s уже есть в системе",
                         user.getEmail()));
