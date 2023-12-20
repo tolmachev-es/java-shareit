@@ -5,8 +5,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.validationGroups.OnCreate;
-import ru.practicum.shareit.item.model.validationGroups.OnUpdate;
+import ru.practicum.shareit.item.model.validationGroups.ItemOnCreate;
+import ru.practicum.shareit.item.model.validationGroups.ItemOnUpdate;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.constraints.NotNull;
@@ -26,13 +26,13 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(@NotNull @RequestHeader("X-Sharer-User-Id") long userId,
-                          @Validated(OnCreate.class) @RequestBody Item item) {
+                          @Validated(ItemOnCreate.class) @RequestBody Item item) {
         return ItemMapper.ITEM_MAPPER.toDto(itemService.create(item, userId));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@NotNull @RequestHeader("X-Sharer-User-Id") long userId,
-                          @Validated(OnUpdate.class) @RequestBody Item item,
+                          @Validated(ItemOnUpdate.class) @RequestBody Item item,
                           @PathVariable long itemId) {
         return ItemMapper.ITEM_MAPPER.toDto(itemService.update(item, userId, itemId));
     }
