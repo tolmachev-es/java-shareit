@@ -10,4 +10,5 @@ public interface ItemDao {
     Item get(long itemId);
     Item update(Item item);
     List<Item> getByOwner(long userId);
+    List<Item> search(String text);
 }

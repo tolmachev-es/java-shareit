@@ -42,6 +42,15 @@ public class InMemoryItemDao implements ItemDao {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Item> search(String text) {
+        return itemMap.values().stream()
+                .filter(Item::getAvailable)
+                .filter(i -> i.getName().toLowerCase().contains(text.toLowerCase())
+                        || i.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
     private long getId() {
         return ++id;
     }

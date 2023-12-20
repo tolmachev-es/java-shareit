@@ -44,11 +44,19 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAll(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
-        List<Item> result = itemService.getAllByOwner(userId);
-        if (result.isEmpty()) {
+        return itemService.getAllByOwner(userId).stream()
+                .map(ItemMapper.ITEM_MAPPER::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> search(@RequestParam String text) {
+        if (text.isBlank()) {
             return new ArrayList<>();
         } else {
-            return result.stream().map(ItemMapper.ITEM_MAPPER::toDto).collect(Collectors.toList());
+            return itemService.search(text).stream()
+                    .map(ItemMapper.ITEM_MAPPER::toDto)
+                    .collect(Collectors.toList());
         }
     }
 }

@@ -48,4 +48,9 @@ public class ItemServiceImpl implements ItemService {
         return itemDao.getByOwner(userId);
     }
 
+    @Override
+    public List<Item> search(String text) {
+        return itemDao.search(text);
+    }
+
 }
