@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
