@@ -76,7 +76,7 @@ public class InMemoryUserDao implements UserDao {
     }
 
     private long getId() {
-        log.info("Получен запрос за получение нового id");
+        log.info("Получен запрос на получение нового id");
         return ++id;
     }
 }
