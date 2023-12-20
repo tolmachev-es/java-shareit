@@ -1,5 +1,8 @@
 package ru.practicum.shareit.item.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +31,11 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
+    @Operation(summary = "Создание вещи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item create"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public ItemDto create(@NotNull @RequestHeader("X-Sharer-User-Id") long userId,
                           @Validated(ItemOnCreate.class) @RequestBody Item item) {
         log.info("Получен запрос на создание вещи");
@@ -35,6 +43,12 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
+    @Operation(summary = "Обновление вещи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item update"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights"),
+            @ApiResponse(responseCode = "404", description = "Item not found")
+    })
     public ItemDto update(@NotNull @RequestHeader("X-Sharer-User-Id") long userId,
                           @Validated(ItemOnUpdate.class) @RequestBody Item item,
                           @PathVariable long itemId) {
@@ -43,12 +57,22 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
+    @Operation(summary = "Получение пользователя по id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item get"),
+            @ApiResponse(responseCode = "404", description = "Item not found")
+    })
     public ItemDto get(@PathVariable long itemId) {
         log.info("Получен запрос на получение вещи с id {]", itemId);
         return ItemMapper.ITEM_MAPPER.toDto(itemService.get(itemId));
     }
 
     @GetMapping
+    @Operation(summary = "Получение всех вещей пользователя по id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Items get"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public List<ItemDto> getAll(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получен запрос на получение всех вещей пользователя {}", userId);
         return itemService.getAllByOwner(userId).stream()
@@ -57,6 +81,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "Поиск по вещам")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Items found")
+    })
     public List<ItemDto> search(@RequestParam String text) {
         if (text.isBlank()) {
             log.info("Получен запрос на поиск с пустым значением в запросе");
