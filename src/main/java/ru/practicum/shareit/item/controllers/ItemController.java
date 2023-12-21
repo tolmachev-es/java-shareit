@@ -59,7 +59,7 @@ public class ItemController {
             @ApiResponse(responseCode = "404", description = "Item not found")
     })
     public ItemDto get(@PathVariable long itemId) {
-        log.info("Получен запрос на получение вещи с id {]", itemId);
+        log.info("Получен запрос на получение вещи с id {}", itemId);
         return itemService.get(itemId);
     }
 
