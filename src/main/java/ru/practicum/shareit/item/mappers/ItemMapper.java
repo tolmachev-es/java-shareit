@@ -10,4 +10,6 @@ public interface ItemMapper {
     ItemMapper ITEM_MAPPER = Mappers.getMapper(ItemMapper.class);
 
     ItemDto toDto(Item item);
+
+    Item fromDto(ItemDto itemDto);
 }
