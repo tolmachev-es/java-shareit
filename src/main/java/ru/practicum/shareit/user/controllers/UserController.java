@@ -8,14 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mappers.UserMapper;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.validationGroups.UserOnCreate;
 import ru.practicum.shareit.user.model.validationGroups.UserOnUpdate;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-controllers.
@@ -33,9 +30,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User create"),
             @ApiResponse(responseCode = "409", description = "Email already exist")
     })
-    public UserDto create(@Validated(UserOnCreate.class) @RequestBody User user) {
+    public UserDto create(@Validated(UserOnCreate.class) @RequestBody UserDto user) {
         log.info("Получен запрос на добавление юзера");
-        return UserMapper.USER_MAPPER.toDto(userService.create(user));
+        return userService.create(user);
     }
 
     @PatchMapping("/{id}")
@@ -44,10 +41,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User update"),
             @ApiResponse(responseCode = "409", description = "Email already exist")
     })
-    public UserDto update(@Validated(UserOnUpdate.class) @RequestBody User user,
+    public UserDto update(@Validated(UserOnUpdate.class) @RequestBody UserDto user,
                           @PathVariable("id") Long id) {
         log.info("Получен запрос на обновление пользователя");
-        return UserMapper.USER_MAPPER.toDto(userService.update(user, id));
+        return userService.update(user, id);
     }
 
     @GetMapping("/{id}")
@@ -58,7 +55,7 @@ public class UserController {
     })
     public UserDto getById(@PathVariable("id") Long id) {
         log.info("Получен запрос на получение пользователя с id {}", id);
-        return UserMapper.USER_MAPPER.toDto(userService.getById(id));
+        return userService.getById(id);
     }
 
     @GetMapping
@@ -68,9 +65,7 @@ public class UserController {
     })
     public List<UserDto> getAll() {
         log.info("Получен запрос на получение всех пользователей");
-        return userService.getAll().stream()
-                .map(UserMapper.USER_MAPPER::toDto)
-                .collect(Collectors.toList());
+        return userService.getAll();
     }
 
     @DeleteMapping("/{id}")
