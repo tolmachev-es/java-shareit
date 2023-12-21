@@ -69,7 +69,7 @@ public class InMemoryUserDao implements UserDao {
         userMap.remove(id);
     }
 
-    public Optional<User> getUserByEmail(String email) {
+    private Optional<User> getUserByEmail(String email) {
         return userMap.values().stream()
                 .filter(u -> u.getEmail().equals(email))
                 .findAny();
