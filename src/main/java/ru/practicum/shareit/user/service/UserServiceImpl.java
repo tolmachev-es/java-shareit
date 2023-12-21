@@ -5,9 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,23 +21,30 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
 
     @Override
-    public User create(User user) {
-        return userDao.create(user);
+    public UserDto create(UserDto user) {
+        User newUser = UserMapper.USER_MAPPER.fromDto(user);
+        return UserMapper.USER_MAPPER
+                .toDto(userDao.create(newUser));
     }
 
     @Override
-    public User update(User user, Long id) {
-        return userDao.update(user, id);
+    public UserDto update(UserDto user, Long id) {
+        User updateUser = UserMapper.USER_MAPPER.fromDto(user);
+        return UserMapper.USER_MAPPER
+                .toDto(userDao.update(updateUser, id));
     }
 
     @Override
-    public User getById(Long id) {
-        return userDao.getUserById(id);
+    public UserDto getById(Long id) {
+        return UserMapper.USER_MAPPER
+                .toDto(userDao.getUserById(id));
     }
 
     @Override
-    public List<User> getAll() {
-        return userDao.getAll();
+    public List<UserDto> getAll() {
+        return userDao.getAll().stream()
+                .map(UserMapper.USER_MAPPER::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
