@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service;
 
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.util.List;
+import java.util.Set;
 
 public interface UserService {
     UserDto create(UserDto user);
@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDto getById(Long id);
 
-    List<UserDto> getAll();
+    Set<UserDto> getAll();
 
     void deleteById(Long id);
 }
