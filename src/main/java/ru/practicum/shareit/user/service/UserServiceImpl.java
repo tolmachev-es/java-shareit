@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dao.UserDao;
-import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 

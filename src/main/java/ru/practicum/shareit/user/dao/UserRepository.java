@@ -8,5 +8,6 @@ import java.util.Set;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> getUserById(Long id);
+
     Set<UserEntity> findAllByOrderByIdAsc();
 }

@@ -12,10 +12,7 @@ import ru.practicum.shareit.user.model.validationGroups.UserOnCreate;
 import ru.practicum.shareit.user.model.validationGroups.UserOnUpdate;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-controllers.

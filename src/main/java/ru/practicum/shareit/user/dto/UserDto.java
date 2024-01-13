@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import ru.practicum.shareit.user.model.validationGroups.UserOnCreate;
 import ru.practicum.shareit.user.model.validationGroups.UserOnUpdate;
 

@@ -14,7 +14,9 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * TODO Sprint add-controllers.
@@ -69,7 +71,7 @@ public class ItemController {
             @ApiResponse(responseCode = "200", description = "Items get"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public List<ItemDto> getAll(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Set<ItemDto> getAll(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получен запрос на получение всех вещей пользователя {}", userId);
         return itemService.getAllByOwner(userId);
     }
@@ -79,10 +81,10 @@ public class ItemController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Items found")
     })
-    public List<ItemDto> search(@RequestParam String text) {
+    public Set<ItemDto> search(@RequestParam String text) {
         if (text.isBlank()) {
             log.info("Получен запрос на поиск с пустым значением в запросе");
-            return new ArrayList<>();
+            return new HashSet<>();
         } else {
             log.info("Получен запрос на поиск с текстом {}", text);
             return itemService.search(text);

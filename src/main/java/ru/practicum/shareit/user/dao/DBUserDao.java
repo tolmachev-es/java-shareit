@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.errors.EmailAlreadyExistException;
 import ru.practicum.shareit.user.errors.UserNotFoundException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,7 +24,7 @@ public class DBUserDao implements UserDao {
             log.info("Добавлен пользователь с id {}", id);
             user.setId(id);
             return user;
-        } catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             log.info("Пользователь с таким email уже существует. новый пользователь не добавлен");
             throw new EmailAlreadyExistException(String.format("Пользователь с Email %s уже есть в системе",
                     user.getEmail()));
