@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingDtoByItemRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.item.model.validationGroups.ItemOnCreate;
 
@@ -14,7 +16,6 @@ import java.util.Objects;
  * TODO Sprint add-controllers.
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDto {
     private Long id;
     @NotBlank(groups = ItemOnCreate.class)
@@ -25,8 +26,8 @@ public class ItemDto {
     private String description;
     @NotNull(groups = ItemOnCreate.class)
     private Boolean available;
-    private BookingDtoResponse lastBooking;
-    private BookingDtoResponse nextBooking;
+    private BookingDtoByItemRequest lastBooking;
+    private BookingDtoByItemRequest nextBooking;
 
     @Override
     public boolean equals(Object o) {

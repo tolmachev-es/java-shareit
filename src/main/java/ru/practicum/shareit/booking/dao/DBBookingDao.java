@@ -101,4 +101,16 @@ public class DBBookingDao implements BookingDao {
         return bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(userId, BookingStatus.REJECTED);
     }
 
+    @Override
+    public Optional<BookingEntity> getNextBooking(Long itemId) {
+        return bookingRepository.findTopBookingEntitiesByItem_IdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
+
+    }
+
+    @Override
+    public Optional<BookingEntity> getLastBooking(Long itemId) {
+        return bookingRepository.findTopBookingEntitiesByItem_IdOrderById(itemId);
+
+    }
+
 }

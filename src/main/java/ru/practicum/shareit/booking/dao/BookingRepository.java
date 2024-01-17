@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
@@ -28,4 +29,6 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartAfter(Long item_owner_id, LocalDateTime start);
 
     Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStatus(Long item_owner_id, BookingStatus status);
+    Optional<BookingEntity> findTopBookingEntitiesByItem_IdOrderById(Long item_id);
+    Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartAfterOrderByStartAsc(Long item_id, LocalDateTime start);
 }

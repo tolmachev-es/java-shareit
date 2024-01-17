@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dao;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface BookingDao {
@@ -32,4 +33,6 @@ public interface BookingDao {
     Set<BookingEntity> getWaitingByOwner(Long userId);
 
     Set<BookingEntity> getRejectedByOwner(Long userId);
+    Optional<BookingEntity> getNextBooking(Long itemId);
+    Optional<BookingEntity> getLastBooking(Long itemId);
 }

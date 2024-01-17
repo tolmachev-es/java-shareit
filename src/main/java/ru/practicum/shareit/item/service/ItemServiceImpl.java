@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingDao;
+import ru.practicum.shareit.booking.dao.BookingEntity;
+import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.ItemMapper;
@@ -12,6 +14,7 @@ import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,8 +49,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto get(Long itemId, Long userId) {
         Item item = ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId));
-
-        return ItemMapper.ITEM_MAPPER.toDto(item);
+        ItemDto itemDto = ItemMapper.ITEM_MAPPER.toDto(item);
+        if (item.getOwner().getId().equals(userId)) {
+            return addBooking(itemDto);
+        } else {
+            return itemDto;
+        }
     }
 
     @Override
@@ -58,6 +65,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toSet());
         return items.stream()
                 .map(ItemMapper.ITEM_MAPPER::toDto)
+                .map(this::addBooking)
                 .collect(Collectors.toSet());
     }
 
@@ -69,5 +77,17 @@ public class ItemServiceImpl implements ItemService {
         return items.stream()
                 .map(ItemMapper.ITEM_MAPPER::toDto)
                 .collect(Collectors.toSet());
+    }
+
+    private ItemDto addBooking(ItemDto itemDto) {
+        Optional<BookingEntity> previousBooking = bookingDao.getLastBooking(itemDto.getId());
+        Optional<BookingEntity> nextBooking = bookingDao.getNextBooking(itemDto.getId());
+        previousBooking.ifPresent(bookingEntity -> itemDto.setLastBooking(
+                BookingMapper.BOOKING_MAPPER.toDtoByItemRequest(
+                        BookingMapper.BOOKING_MAPPER.fromEntity(bookingEntity))));
+        nextBooking.ifPresent(bookingEntity -> itemDto.setNextBooking(
+                BookingMapper.BOOKING_MAPPER.toDtoByItemRequest(
+                        BookingMapper.BOOKING_MAPPER.fromEntity(bookingEntity))));
+        return itemDto;
     }
 }
