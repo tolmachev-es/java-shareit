@@ -13,9 +13,7 @@ import ru.practicum.shareit.item.model.validationGroups.ItemOnUpdate;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -55,14 +53,15 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    @Operation(summary = "Получение пользователя по id")
+    @Operation(summary = "Получение вещи по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Item get"),
             @ApiResponse(responseCode = "404", description = "Item not found")
     })
-    public ItemDto get(@PathVariable long itemId) {
+    public ItemDto get(@PathVariable long itemId,
+                       @NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получен запрос на получение вещи с id {}", itemId);
-        return itemService.get(itemId);
+        return itemService.get(itemId, userId);
     }
 
     @GetMapping

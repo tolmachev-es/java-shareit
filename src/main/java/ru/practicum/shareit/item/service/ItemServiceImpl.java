@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.ItemMapper;
@@ -21,6 +22,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemDao itemDao;
     @Qualifier("DBUserDao")
     private final UserDao userDao;
+    private final BookingDao bookingDao;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
@@ -42,8 +44,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto get(Long itemId) {
+    public ItemDto get(Long itemId, Long userId) {
         Item item = ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId));
+
         return ItemMapper.ITEM_MAPPER.toDto(item);
     }
 
