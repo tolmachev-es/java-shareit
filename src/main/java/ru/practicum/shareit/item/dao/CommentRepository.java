@@ -7,5 +7,5 @@ import java.util.Set;
 
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
-    Set<CommentEntity> findAllByItem_Id(Long item_id);
+    Set<CommentEntity> findAllByItem_Id(Long itemId);
 }

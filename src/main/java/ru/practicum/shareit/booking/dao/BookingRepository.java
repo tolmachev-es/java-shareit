@@ -8,34 +8,34 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
-    Set<BookingEntity> findBookingEntitiesByBooker_Id(Long user_id);
+    Set<BookingEntity> findBookingEntitiesByBooker_Id(Long userid);
 
     Set<BookingEntity> findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(
-            Long user_id, LocalDateTime now1, LocalDateTime now2);
+            Long userId, LocalDateTime now1, LocalDateTime now2);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndEndBefore(Long user_id, LocalDateTime now);
+    Set<BookingEntity> findBookingEntitiesByBooker_IdAndEndBefore(Long userid, LocalDateTime now);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStartAfter(Long user_id, LocalDateTime now);
+    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStartAfter(Long userid, LocalDateTime now);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStatus(Long user_id, BookingStatus bookingStatus);
+    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStatus(Long userid, BookingStatus bookingStatus);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerId(Long item_owner_id);
+    Set<BookingEntity> findBookingEntitiesByItem_OwnerId(Long itemOwnerId);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter
-            (Long item_owner_id, LocalDateTime start, LocalDateTime end);
+    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(
+            Long itemOwnerId, LocalDateTime start, LocalDateTime end);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndEndBefore(Long item_owner_id, LocalDateTime end);
+    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndEndBefore(Long itemOwnerId, LocalDateTime end);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartAfter(Long item_owner_id, LocalDateTime start);
+    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartAfter(Long itemOwnerId, LocalDateTime start);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStatus(Long item_owner_id, BookingStatus status);
+    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStatus(Long itemOwnerId, BookingStatus status);
 
     Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
-            Long item_id, LocalDateTime end, BookingStatus status);
+            Long itemId, LocalDateTime end, BookingStatus status);
 
     Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
-            Long item_id, LocalDateTime start, BookingStatus status);
+            Long itemId, LocalDateTime start, BookingStatus status);
 
     Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(
-            Long item_id, Long booker_id, LocalDateTime end);
+            Long itemId, Long bookerId, LocalDateTime end);
 }

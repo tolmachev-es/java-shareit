@@ -15,5 +15,6 @@ public interface ItemService {
     Set<ItemDto> getAllByOwner(Long userId);
 
     Set<ItemDto> search(String text);
+
     CommentDto addComment(Long userId, Long itemId, CommentDto commentDto);
 }

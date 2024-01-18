@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingDtoByItemRequest;
-import ru.practicum.shareit.booking.dto.BookingDtoRequest;
-import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.item.model.validationGroups.ItemOnCreate;
 
 import javax.validation.constraints.NotBlank;

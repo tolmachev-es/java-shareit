@@ -7,8 +7,9 @@ import java.util.Set;
 
 @Repository
 @AllArgsConstructor
-public class DBCommentDao implements CommentDao{
+public class DBCommentDao implements CommentDao {
     private final CommentRepository commentRepository;
+
     @Override
     public CommentEntity create(CommentEntity commentEntity) {
         commentRepository.save(commentEntity);
