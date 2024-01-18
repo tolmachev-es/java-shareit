@@ -94,9 +94,15 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
+    @Operation(summary = "Поиск по вещам")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comment successful append"),
+            @ApiResponse(responseCode = "404", description = "Not found")
+    })
     public CommentDto addComment(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId,
                                  @PathVariable long itemId,
                                  @Valid @RequestBody CommentDto commentDto) {
+        log.info("Получен запрос на добавления комментария к вещи с id {}", itemId);
         return itemService.addComment(userId, itemId, commentDto);
     }
 }
