@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking.dao;
 import lombok.Data;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.errors.BookingNotFound;
+import ru.practicum.shareit.booking.errors.NotFoundBookingByUser;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
 import javax.transaction.Transactional;
@@ -103,14 +105,27 @@ public class DBBookingDao implements BookingDao {
 
     @Override
     public Optional<BookingEntity> getNextBooking(Long itemId) {
-        return bookingRepository.findTopBookingEntitiesByItem_IdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
+        return bookingRepository.findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
+                itemId, LocalDateTime.now(), BookingStatus.APPROVED);
 
     }
 
     @Override
     public Optional<BookingEntity> getLastBooking(Long itemId) {
-        return bookingRepository.findTopBookingEntitiesByItem_IdOrderById(itemId);
+        return bookingRepository.findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
+                itemId, LocalDateTime.now(), BookingStatus.APPROVED);
 
+    }
+
+    @Override
+    public BookingEntity getBookingByIdAndBooker(Long itemId, Long userId) {
+        Optional<BookingEntity> booking = bookingRepository.
+                findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
+        if (booking.isPresent()) {
+            return booking.get();
+        } else {
+            throw new NotFoundBookingByUser("По параметрам не найдено бронирование");
+        }
     }
 
 }

@@ -6,14 +6,19 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
+import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     @Qualifier("DBUserDao")
     private final UserDao userDao;
     private final BookingDao bookingDao;
+    private final CommentDao commentDao;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
@@ -51,9 +57,10 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId));
         ItemDto itemDto = ItemMapper.ITEM_MAPPER.toDto(item);
         if (item.getOwner().getId().equals(userId)) {
-            return addBooking(itemDto);
+            itemDto = addBooking(itemDto);
+            return addComment(itemDto);
         } else {
-            return itemDto;
+            return addComment(itemDto);
         }
     }
 
@@ -66,6 +73,7 @@ public class ItemServiceImpl implements ItemService {
         return items.stream()
                 .map(ItemMapper.ITEM_MAPPER::toDto)
                 .map(this::addBooking)
+                .map(this::addComment)
                 .collect(Collectors.toSet());
     }
 
@@ -79,6 +87,18 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
+        bookingDao.getBookingByIdAndBooker(itemId, userId);
+        Comment newComment = CommentMapper.COMMENT_MAPPER.fromDto(commentDto);
+        newComment.setItem(ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId)));
+        newComment.setAuthor(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+        newComment.setCreated(LocalDateTime.now());
+        return CommentMapper.COMMENT_MAPPER.toDto(
+                CommentMapper.COMMENT_MAPPER.fromEntity(
+                        commentDao.create(CommentMapper.COMMENT_MAPPER.toEntity(newComment))));
+    }
+
     private ItemDto addBooking(ItemDto itemDto) {
         Optional<BookingEntity> previousBooking = bookingDao.getLastBooking(itemDto.getId());
         Optional<BookingEntity> nextBooking = bookingDao.getNextBooking(itemDto.getId());
@@ -88,6 +108,18 @@ public class ItemServiceImpl implements ItemService {
         nextBooking.ifPresent(bookingEntity -> itemDto.setNextBooking(
                 BookingMapper.BOOKING_MAPPER.toDtoByItemRequest(
                         BookingMapper.BOOKING_MAPPER.fromEntity(bookingEntity))));
+        return itemDto;
+    }
+
+    private ItemDto addComment(ItemDto itemDto) {
+        Set<Comment> comments = commentDao.getAllByItem(itemDto.getId())
+                .stream()
+                .map(CommentMapper.COMMENT_MAPPER::fromEntity)
+                .collect(Collectors.toSet());
+        itemDto.setComments(comments
+                .stream()
+                .map(CommentMapper.COMMENT_MAPPER::toDto)
+                .collect(Collectors.toSet()));
         return itemDto;
     }
 }

@@ -11,5 +11,6 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
     Set<ItemEntity> getItemEntityByOwner(UserEntity owner);
 
-    Set<ItemEntity> getItemEntityByDescriptionContainsIgnoreCaseAndAvailableIsTrue(String text);
+    Set<ItemEntity> getItemEntityByDescriptionContainsIgnoreCaseAndAvailableIsTrueOrNameContainsIgnoreCaseAndAvailableIsTrue(
+            String text, String text1);
 }

@@ -29,6 +29,13 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartAfter(Long item_owner_id, LocalDateTime start);
 
     Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStatus(Long item_owner_id, BookingStatus status);
-    Optional<BookingEntity> findTopBookingEntitiesByItem_IdOrderById(Long item_id);
-    Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartAfterOrderByStartAsc(Long item_id, LocalDateTime start);
+
+    Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
+            Long item_id, LocalDateTime end, BookingStatus status);
+
+    Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
+            Long item_id, LocalDateTime start, BookingStatus status);
+
+    Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(
+            Long item_id, Long booker_id, LocalDateTime end);
 }

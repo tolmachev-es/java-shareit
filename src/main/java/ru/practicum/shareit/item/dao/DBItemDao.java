@@ -59,6 +59,8 @@ public class DBItemDao implements ItemDao {
 
     @Override
     public Set<ItemEntity> search(String text) {
-        return itemRepository.getItemEntityByDescriptionContainsIgnoreCaseAndAvailableIsTrue(text.toLowerCase());
+        return itemRepository.
+                getItemEntityByDescriptionContainsIgnoreCaseAndAvailableIsTrueOrNameContainsIgnoreCaseAndAvailableIsTrue(
+                text.toLowerCase(), text.toLowerCase());
     }
 }

@@ -7,11 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.validationGroups.ItemOnCreate;
 import ru.practicum.shareit.item.model.validationGroups.ItemOnUpdate;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
@@ -88,5 +91,12 @@ public class ItemController {
             log.info("Получен запрос на поиск с текстом {}", text);
             return itemService.search(text);
         }
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable long itemId,
+                                 @Valid @RequestBody CommentDto commentDto) {
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }

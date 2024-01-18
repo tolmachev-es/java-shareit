@@ -68,4 +68,10 @@ public class BookingErrorHandler {
         return new ResponseEntity<>(Map.of("Status", alreadyCompleted.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NotFoundBookingByUser.class)
+    public ResponseEntity<Map<String, String>> handle(final NotFoundBookingByUser notFoundBookingByUser) {
+        return new ResponseEntity<>(Map.of("Booking", notFoundBookingByUser.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
 }

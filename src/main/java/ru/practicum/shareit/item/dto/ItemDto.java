@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * TODO Sprint add-controllers.
@@ -28,6 +29,7 @@ public class ItemDto {
     private Boolean available;
     private BookingDtoByItemRequest lastBooking;
     private BookingDtoByItemRequest nextBooking;
+    private Set<CommentDto> comments;
 
     @Override
     public boolean equals(Object o) {
