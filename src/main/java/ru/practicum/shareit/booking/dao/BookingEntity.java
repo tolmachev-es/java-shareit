@@ -10,23 +10,23 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(schema = "public", name = "BOOKING")
+@Table(schema = "PUBLIC", name = "BOOKING")
 public class BookingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name = "ID", nullable = false)
     private Long id;
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "START_TIME", nullable = false)
     private LocalDateTime start;
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "END_TIME", nullable = false)
     private LocalDateTime end;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "ITEM_ID", nullable = false)
     private ItemEntity item;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private UserEntity booker;
-    @Column(nullable = false)
+    @Column(name = "STATUS", nullable = false)
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 }

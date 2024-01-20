@@ -3,9 +3,11 @@ package ru.practicum.shareit.item.service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.booking.dao.BookingEntity;
+import ru.practicum.shareit.booking.dao.BookingRepository;
+import ru.practicum.shareit.booking.errors.NotFoundBookingByUser;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -30,8 +32,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemDao itemDao;
     @Qualifier("DBUserDao")
     private final UserDao userDao;
-    private final BookingDao bookingDao;
     private final CommentDao commentDao;
+    private final BookingRepository bookingRepository;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
@@ -89,19 +91,28 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
-        bookingDao.getBookingByIdAndBooker(itemId, userId);
-        Comment newComment = CommentMapper.COMMENT_MAPPER.fromDto(commentDto);
-        newComment.setItem(ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId)));
-        newComment.setAuthor(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
-        newComment.setCreated(LocalDateTime.now());
-        return CommentMapper.COMMENT_MAPPER.toDto(
-                CommentMapper.COMMENT_MAPPER.fromEntity(
-                        commentDao.create(CommentMapper.COMMENT_MAPPER.toEntity(newComment))));
+        Optional<BookingEntity> booking = bookingRepository
+                .findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
+        if (booking.isPresent()) {
+            Comment newComment = CommentMapper.COMMENT_MAPPER.fromDto(commentDto);
+            newComment.setItem(ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId)));
+            newComment.setAuthor(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+            newComment.setCreated(LocalDateTime.now());
+            return CommentMapper.COMMENT_MAPPER.toDto(
+                    CommentMapper.COMMENT_MAPPER.fromEntity(
+                            commentDao.create(CommentMapper.COMMENT_MAPPER.toEntity(newComment))));
+        } else {
+            throw new NotFoundBookingByUser("По параметрам не найдено бронирование");
+        }
     }
 
     private ItemDto addBooking(ItemDto itemDto) {
-        Optional<BookingEntity> previousBooking = bookingDao.getLastBooking(itemDto.getId());
-        Optional<BookingEntity> nextBooking = bookingDao.getNextBooking(itemDto.getId());
+        Optional<BookingEntity> previousBooking = bookingRepository
+                .findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
+                        itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
+        Optional<BookingEntity> nextBooking = bookingRepository
+                .findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
+                        itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
         previousBooking.ifPresent(bookingEntity -> itemDto.setLastBooking(
                 BookingMapper.BOOKING_MAPPER.toDtoByItemRequest(
                         BookingMapper.BOOKING_MAPPER.fromEntity(bookingEntity))));

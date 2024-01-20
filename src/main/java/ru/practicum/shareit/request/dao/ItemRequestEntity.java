@@ -8,17 +8,17 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(schema = "public", name = "ITEM_REQUESTS")
+@Table(schema = "PUBLIC", name = "ITEM_REQUESTS")
 public class ItemRequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name = "ID", nullable = false)
     private Long id;
-    @Column(nullable = false)
+    @Column(name = "DESCRIPTION", nullable = false)
     private String description;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "requestor_id", nullable = false)
+    @JoinColumn(name = "REQUESTOR_ID", nullable = false)
     private UserEntity requestor;
-    @Column(nullable = false)
+    @Column(name = "CREATED", nullable = false)
     private LocalDateTime created;
 }

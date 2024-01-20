@@ -6,14 +6,14 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(schema = "public", name = "USERS")
+@Table(schema = "PUBLIC", name = "USERS")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name = "ID", nullable = false)
     private Long id;
-    @Column(nullable = false)
+    @Column(name = "NAME", nullable = false)
     private String name;
-    @Column(unique = true, nullable = false)
+    @Column(name = "EMAIL",unique = true, nullable = false)
     private String email;
 }

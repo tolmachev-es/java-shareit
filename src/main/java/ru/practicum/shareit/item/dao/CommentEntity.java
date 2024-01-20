@@ -8,20 +8,20 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(schema = "public", name = "comments")
+@Table(schema = "PUBLIC", name = "COMMENTS")
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name = "ID", nullable = false)
     private Long id;
-    @Column(nullable = false)
+    @Column(name = "TEXT", nullable = false)
     private String text;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "ITEM_ID", nullable = false)
     private ItemEntity item;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "AUTHOR_ID", nullable = false)
     private UserEntity author;
-    @Column(nullable = false)
+    @Column(name = "CREATED", nullable = false)
     private LocalDateTime created;
 }

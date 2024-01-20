@@ -8,22 +8,22 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(schema = "public", name = "ITEMS")
+@Table(schema = "PUBLIC", name = "ITEMS")
 public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name = "ID", nullable = false)
     private Long id;
-    @Column(nullable = false)
+    @Column(name = "NAME", nullable = false)
     private String name;
-    @Column(nullable = false)
+    @Column(name = "DESCRIPRION", nullable = false)
     private String description;
-    @Column(nullable = false)
+    @Column(name = "AVAILABLE", nullable = false)
     private Boolean available;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "OWNER_ID", nullable = false)
     private UserEntity owner;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "item_request_id")
+    @JoinColumn(name = "ITEM_REQUEST_ID")
     private ItemRequestEntity itemRequest;
 }
