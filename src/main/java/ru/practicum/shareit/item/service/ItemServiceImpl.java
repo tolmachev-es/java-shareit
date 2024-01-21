@@ -1,65 +1,136 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dao.BookingEntity;
+import ru.practicum.shareit.booking.dao.BookingRepository;
+import ru.practicum.shareit.booking.errors.NotFoundBookingByUser;
+import ru.practicum.shareit.booking.mappers.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.errors.IncorrectUserException;
+import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.dao.UserEntity;
+import ru.practicum.shareit.user.mappers.UserMapper;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    @Qualifier("inMemoryItemDao")
+    @Qualifier("DBItemDao")
     private final ItemDao itemDao;
-    @Qualifier("inMemoryUserDao")
+    @Qualifier("DBUserDao")
     private final UserDao userDao;
+    private final CommentDao commentDao;
+    private final BookingRepository bookingRepository;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
         Item newItem = ItemMapper.ITEM_MAPPER.fromDto(item);
-        newItem.setOwner(userDao.getUserById(userId));
-        return ItemMapper.ITEM_MAPPER.toDto(itemDao.create(newItem));
+        newItem.setOwner(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+        Item createItem = ItemMapper.ITEM_MAPPER.fromEntity(
+                itemDao.create(ItemMapper.ITEM_MAPPER.toEntity(newItem)));
+        return ItemMapper.ITEM_MAPPER.toDto(createItem);
     }
 
     @Override
     public ItemDto update(ItemDto item, long userId, long itemId) {
-        Item oldItem = itemDao.get(itemId);
-        if (oldItem.getOwner().getId() == userId) {
-            oldItem.setName(item.getName() != null ? item.getName() : oldItem.getName());
-            oldItem.setDescription(item.getDescription() != null ? item.getDescription() : oldItem.getDescription());
-            oldItem.setAvailable(item.getAvailable() != null ? item.getAvailable() : oldItem.getAvailable());
-            return ItemMapper.ITEM_MAPPER.toDto(itemDao.update(oldItem));
+        Item itemToUpdate = ItemMapper.ITEM_MAPPER.fromDto(item);
+        itemToUpdate.setOwner(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+        itemToUpdate.setId(itemId);
+        Item updateItem = ItemMapper.ITEM_MAPPER.fromEntity(
+                itemDao.update(ItemMapper.ITEM_MAPPER.toEntity(itemToUpdate)));
+        return ItemMapper.ITEM_MAPPER.toDto(updateItem);
+    }
+
+    @Override
+    public ItemDto get(Long itemId, Long userId) {
+        Item item = ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId));
+        ItemDto itemDto = ItemMapper.ITEM_MAPPER.toDto(item);
+        if (item.getOwner().getId().equals(userId)) {
+            itemDto = addBooking(itemDto);
+            return addComment(itemDto);
         } else {
-            throw new IncorrectUserException(
-                    String.format("Пользователь %s не не имеет прав для редактирования вещи %s", userId, itemId));
+            return addComment(itemDto);
         }
     }
 
     @Override
-    public ItemDto get(Long itemId) {
-        return ItemMapper.ITEM_MAPPER.toDto(itemDao.get(itemId));
+    public Set<ItemDto> getAllByOwner(Long userId) {
+        UserEntity user = userDao.getUserById(userId);
+        Set<Item> items = itemDao.getByOwner(user).stream()
+                .map(ItemMapper.ITEM_MAPPER::fromEntity)
+                .collect(Collectors.toSet());
+        return items.stream()
+                .map(ItemMapper.ITEM_MAPPER::toDto)
+                .map(this::addBooking)
+                .map(this::addComment)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<ItemDto> getAllByOwner(Long userId) {
-        userDao.getUserById(userId);
-        return itemDao.getByOwner(userId).stream()
+    public Set<ItemDto> search(String text) {
+        Set<Item> items = itemDao.search(text).stream()
+                .map(ItemMapper.ITEM_MAPPER::fromEntity)
+                .collect(Collectors.toSet());
+        return items.stream()
                 .map(ItemMapper.ITEM_MAPPER::toDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<ItemDto> search(String text) {
-        return itemDao.search(text).stream()
-                .map(ItemMapper.ITEM_MAPPER::toDto)
-                .collect(Collectors.toList());
+    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
+        Optional<BookingEntity> booking = bookingRepository
+                .findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
+        if (booking.isPresent()) {
+            Comment newComment = CommentMapper.COMMENT_MAPPER.fromDto(commentDto);
+            newComment.setItem(ItemMapper.ITEM_MAPPER.fromEntity(itemDao.get(itemId)));
+            newComment.setAuthor(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+            newComment.setCreated(LocalDateTime.now());
+            return CommentMapper.COMMENT_MAPPER.toDto(
+                    CommentMapper.COMMENT_MAPPER.fromEntity(
+                            commentDao.create(CommentMapper.COMMENT_MAPPER.toEntity(newComment))));
+        } else {
+            throw new NotFoundBookingByUser("По параметрам не найдено бронирование");
+        }
     }
 
+    private ItemDto addBooking(ItemDto itemDto) {
+        Optional<BookingEntity> previousBooking = bookingRepository
+                .findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
+                        itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
+        Optional<BookingEntity> nextBooking = bookingRepository
+                .findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
+                        itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
+        previousBooking.ifPresent(bookingEntity -> itemDto.setLastBooking(
+                BookingMapper.BOOKING_MAPPER.toDtoByItemRequest(
+                        BookingMapper.BOOKING_MAPPER.fromEntity(bookingEntity))));
+        nextBooking.ifPresent(bookingEntity -> itemDto.setNextBooking(
+                BookingMapper.BOOKING_MAPPER.toDtoByItemRequest(
+                        BookingMapper.BOOKING_MAPPER.fromEntity(bookingEntity))));
+        return itemDto;
+    }
+
+    private ItemDto addComment(ItemDto itemDto) {
+        Set<Comment> comments = commentDao.getAllByItem(itemDto.getId())
+                .stream()
+                .map(CommentMapper.COMMENT_MAPPER::fromEntity)
+                .collect(Collectors.toSet());
+        itemDto.setComments(comments
+                .stream()
+                .map(CommentMapper.COMMENT_MAPPER::toDto)
+                .collect(Collectors.toSet()));
+        return itemDto;
+    }
 }

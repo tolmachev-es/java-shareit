@@ -12,7 +12,7 @@ import ru.practicum.shareit.user.model.validationGroups.UserOnCreate;
 import ru.practicum.shareit.user.model.validationGroups.UserOnUpdate;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * TODO Sprint add-controllers.
@@ -63,7 +63,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Users get")
     })
-    public List<UserDto> getAll() {
+    public Set<UserDto> getAll() {
         log.info("Получен запрос на получение всех пользователей");
         return userService.getAll();
     }

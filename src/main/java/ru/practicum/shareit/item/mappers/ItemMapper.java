@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import ru.practicum.shareit.item.dao.ItemEntity;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -12,4 +13,8 @@ public interface ItemMapper {
     ItemDto toDto(Item item);
 
     Item fromDto(ItemDto itemDto);
+
+    ItemEntity toEntity(Item item);
+
+    Item fromEntity(ItemEntity itemEntity);
 }

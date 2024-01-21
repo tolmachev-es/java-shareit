@@ -1,17 +1,16 @@
 package ru.practicum.shareit.user.dao;
 
-import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
+import java.util.Set;
 
 public interface UserDao {
-    User create(User user);
+    UserEntity create(UserEntity user);
 
-    User update(User user, long id);
+    UserEntity update(UserEntity user, long id);
 
-    List<User> getAll();
+    Set<UserEntity> getAll();
 
-    User getUserById(long id);
+    UserEntity getUserById(long id);
 
     void deleteById(long id);
 }
