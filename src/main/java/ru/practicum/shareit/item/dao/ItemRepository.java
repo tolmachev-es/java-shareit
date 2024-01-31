@@ -15,6 +15,7 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
     Page<ItemEntity> getItemEntityByDescriptionContainsIgnoreCaseAndAvailableIsTrueOrNameContainsIgnoreCaseAndAvailableIsTrue(
             String text, String text1, Pageable pageable);
+
     Set<ItemEntity> getItemEntitiesByItemRequestNotNull();
 
     Set<ItemEntity> getItemEntitiesByItemRequest_Id(Long itemRequest_id);

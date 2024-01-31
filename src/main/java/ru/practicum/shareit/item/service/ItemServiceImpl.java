@@ -5,9 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
+import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
-import ru.practicum.shareit.booking.errors.NotFoundBookingByUser;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dao.CommentDao;
@@ -18,7 +19,6 @@ import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dao.ItemRequestEntity;
 import ru.practicum.shareit.request.mappers.ItemRequestMapper;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserDao;
@@ -111,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
                     CommentMapper.COMMENT_MAPPER.fromEntity(
                             commentDao.create(CommentMapper.COMMENT_MAPPER.toEntity(newComment))));
         } else {
-            throw new NotFoundBookingByUser("По параметрам не найдено бронирование");
+            throw new InvalidParameterException(String.format("Бронирование вещи с id %s не найдено", itemId));
         }
     }
 

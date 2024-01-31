@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.item.errors.IncorrectUserException;
-import ru.practicum.shareit.item.errors.ItemNotFoundException;
+import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
+import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class DBItemDao implements ItemDao {
             return item.get();
         } else {
             log.info("Вещь с id {} не найдена", itemId);
-            throw new ItemNotFoundException(String.format("Вещь с id %s не найдена", itemId));
+            throw new ObjectNotFound(String.format("Вещь с id %s не найдена", itemId));
         }
     }
 
@@ -46,7 +46,7 @@ public class DBItemDao implements ItemDao {
             itemRepository.save(oldItem);
             return oldItem;
         } else {
-            throw new IncorrectUserException(
+            throw new InvalidParameterException(
                     String.format("Пользователь %s не не имеет прав для редактирования вещи %s",
                             item.getOwner().getId(),
                             item.getId()));

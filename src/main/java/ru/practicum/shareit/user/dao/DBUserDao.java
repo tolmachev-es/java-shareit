@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.user.errors.EmailAlreadyExistException;
-import ru.practicum.shareit.user.errors.UserNotFoundException;
+import ru.practicum.shareit.HeadExeptions.AlreadyExistException;
+import ru.practicum.shareit.HeadExeptions.ConflictException;
+import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class DBUserDao implements UserDao {
             return user;
         } catch (DataIntegrityViolationException e) {
             log.info("Пользователь с таким email уже существует. новый пользователь не добавлен");
-            throw new EmailAlreadyExistException(String.format("Пользователь с Email %s уже есть в системе",
+            throw new ConflictException(String.format("Пользователь с Email %s уже есть в системе",
                     user.getEmail()));
         }
     }
@@ -47,7 +48,7 @@ public class DBUserDao implements UserDao {
             log.info("Обновлены паарметры пользователя {}", id);
         } catch (DataIntegrityViolationException e) {
             log.info("Пользователь с таким email уже существует. новый пользователь не добавлен");
-            throw new EmailAlreadyExistException(String.format("Пользователь с Email %s уже есть в системе",
+            throw new ConflictException(String.format("Пользователь с Email %s уже есть в системе",
                     user.getEmail()));
         }
         return oldUser;
@@ -63,7 +64,7 @@ public class DBUserDao implements UserDao {
         Optional<UserEntity> user = userRepository.getUserById(id);
         if (user.isEmpty()) {
             log.info("Пользователь с {} не найден", id);
-            throw new UserNotFoundException(String.format("Пользователь с id %s не найден", id));
+            throw new ObjectNotFound(String.format("Пользователь с id %s не найден", id));
         } else {
             log.info("Началось получение пользователя с id {}", id);
             return user.get();

@@ -28,7 +28,7 @@ public class ItemRequestController {
 
     @GetMapping
     @Operation(summary = "Получение запроса")
-    public Set<ItemRequestDto> get(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId){
+    public Set<ItemRequestDto> get(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemRequestService.get(userId);
     }
 

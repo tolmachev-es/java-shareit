@@ -1,27 +1,22 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
+import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.item.dao.ItemEntity;
 import ru.practicum.shareit.item.dao.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.request.dao.ItemRequestEntity;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.exception.IncorrectPaginationParameters;
-import ru.practicum.shareit.request.exception.ItemRequestNotFound;
 import ru.practicum.shareit.request.mappers.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserDao;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mappers.UserMapper;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -65,7 +60,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Set<ItemRequestDto> getWithPagination(Long userId, Integer from, Integer size) {
         if (from < 0 || size < 0) {
-            throw new IncorrectPaginationParameters("Неверно указаны параметры отображения");
+            throw new InvalidParameterException("Неверно указаны параметры отображения");
         } else {
             Map<Long, Set<ItemEntity>> items = getItem(itemRepository.getItemEntitiesByItemRequestNotNull());
             Pageable pageable = PageRequest.of(from, size);
@@ -100,15 +95,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             }
             return itemRequest;
         } else {
-            throw new ItemRequestNotFound("Запрос с таким id не найден");
+            throw new ObjectNotFound(String.format("Запрос с id %s не найден", id));
         }
     }
 
     private Map<Long, Set<ItemEntity>> getItem(Set<ItemEntity> itemEntities) {
         Map<Long, Set<ItemEntity>> result = new HashMap<>();
-        for (ItemEntity item:
-             itemEntities) {
-            if(result.containsKey(item.getItemRequest().getId())) {
+        for (ItemEntity item :
+                itemEntities) {
+            if (result.containsKey(item.getItemRequest().getId())) {
                 result.get(item.getItemRequest().getId()).add(item);
             } else {
                 result.put(item.getItemRequest().getId(), Set.of(item));

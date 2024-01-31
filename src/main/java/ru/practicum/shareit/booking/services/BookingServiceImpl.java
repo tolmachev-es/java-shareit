@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.HeadExeptions.AlreadyExistException;
+import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
+import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
-import ru.practicum.shareit.booking.errors.*;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -35,12 +37,12 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = BookingMapper.BOOKING_MAPPER.fromDto(bookingRequest);
         ItemEntity item = itemDao.get(bookingRequest.getItemId());
         if (item.getOwner().getId().equals(userId)) {
-            throw new IncorrectBookingRequest("Владелец не может бронировать свою вещь");
+            throw new ObjectNotFound("Владелец не может бронировать свою вещь");
         }
         if (item.getAvailable()) {
             if (bookingRequest.getStart().isAfter(bookingRequest.getEnd()) ||
                     bookingRequest.getStart().isEqual(bookingRequest.getEnd())) {
-                throw new IncorrectBookingTime("Ошибка во времени бронирования");
+                throw new InvalidParameterException("Ошибка во времени бронирования");
             }
             booking.setItem(ItemMapper.ITEM_MAPPER.fromEntity(item));
             booking.setBooker(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
@@ -50,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
                     BookingMapper.BOOKING_MAPPER.fromEntity(
                             bookingRepository.save(createBooking)));
         } else {
-            throw new ItemNotAvailable(
+            throw new InvalidParameterException(
                     String.format("Вещь с id %s недоступна для бронирования", bookingRequest.getItemId()));
         }
     }
@@ -61,18 +63,18 @@ public class BookingServiceImpl implements BookingService {
         if (findBooking.isPresent()) {
             if (findBooking.get().getItem().getOwner().getId().equals(userId)) {
                 if (findBooking.get().getStatus().equals(BookingStatus.APPROVED)) {
-                    throw new AlreadyCompleted("Статус уже изменен");
+                    throw new AlreadyExistException("Статус уже изменен");
                 }
                 findBooking.get().setStatus(status ? BookingStatus.APPROVED : BookingStatus.REJECTED);
                 return BookingMapper.BOOKING_MAPPER.toDto(
                         BookingMapper.BOOKING_MAPPER.fromEntity(
                                 bookingRepository.save(findBooking.get())));
             } else {
-                throw new IncorrectBookingOwner(
-                        String.format("Пользователь с id %s не может подтвердить запрос на бронирование", userId));
+                throw new ObjectNotFound(
+                        String.format("Не найдено бронирование которое может подтвердить пользователь с id %s", userId));
             }
         } else {
-            throw new BookingNotFound(String.format("Бронирование с id %s не найдено", bookingId));
+            throw new ObjectNotFound(String.format("Бронирование с id %s не найдено", bookingId));
         }
 
     }
@@ -85,11 +87,11 @@ public class BookingServiceImpl implements BookingService {
                     || findBooking.get().getBooker().getId().equals(userId)) {
                 return BookingMapper.BOOKING_MAPPER.toDto(BookingMapper.BOOKING_MAPPER.fromEntity(findBooking.get()));
             } else {
-                throw new IncorrectBookingRequest(String.format(
-                        "Пользователь с id %s не имеет права на просмотр бронирования с id %s", userId, bookingId));
+                throw new ObjectNotFound(String.format(
+                        "Пользователь с id %s не найден среди участников бронирования с id %s", userId, bookingId));
             }
         } else {
-            throw new BookingNotFound(String.format("Бронирование с id %s не найдено", bookingId));
+            throw new ObjectNotFound(String.format("Бронирование с id %s не найдено", bookingId));
         }
 
     }
@@ -101,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             bookingStateEnum = BookingState.valueOf(bookingState);
         } catch (Exception e) {
-            throw new UnsupportedMethod(String.format("Unknown state: %s", bookingState));
+            throw new InvalidParameterException(String.format("Unknown state: %s", bookingState));
         }
         Set<BookingEntity> result = null;
         Pageable pageable = PageRequest.of(from / size, size);
@@ -147,7 +149,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             bookingStateEnum = BookingState.valueOf(bookingState);
         } catch (Exception e) {
-            throw new UnsupportedMethod(String.format("Unknown state: %s", bookingState));
+            throw new InvalidParameterException(String.format("Unknown state: %s", bookingState));
         }
         Set<BookingEntity> result = null;
         switch (bookingStateEnum) {
