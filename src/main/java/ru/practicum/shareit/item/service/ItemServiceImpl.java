@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
@@ -72,9 +74,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Set<ItemDto> getAllByOwner(Long userId) {
+    public Set<ItemDto> getAllByOwner(Long userId, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         UserEntity user = userDao.getUserById(userId);
-        Set<Item> items = itemDao.getByOwner(user).stream()
+        Set<Item> items = itemDao.getByOwner(user, pageable).stream()
                 .map(ItemMapper.ITEM_MAPPER::fromEntity)
                 .collect(Collectors.toSet());
         return items.stream()
@@ -85,8 +88,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Set<ItemDto> search(String text) {
-        Set<Item> items = itemDao.search(text).stream()
+    public Set<ItemDto> search(String text, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+        Set<Item> items = itemDao.search(text, pageable).stream()
                 .map(ItemMapper.ITEM_MAPPER::fromEntity)
                 .collect(Collectors.toSet());
         return items.stream()

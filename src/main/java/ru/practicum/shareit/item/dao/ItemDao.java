@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dao;
 
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import java.util.Set;
@@ -11,7 +12,7 @@ public interface ItemDao {
 
     ItemEntity update(ItemEntity item);
 
-    Set<ItemEntity> getByOwner(UserEntity user);
+    Set<ItemEntity> getByOwner(UserEntity user, Pageable pageable);
 
-    Set<ItemEntity> search(String text);
+    Set<ItemEntity> search(String text, Pageable pageable);
 }

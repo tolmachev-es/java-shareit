@@ -12,9 +12,9 @@ public interface ItemService {
 
     ItemDto get(Long itemId, Long userId);
 
-    Set<ItemDto> getAllByOwner(Long userId);
+    Set<ItemDto> getAllByOwner(Long userId, Integer from, Integer size);
 
-    Set<ItemDto> search(String text);
+    Set<ItemDto> search(String text, Integer from, Integer size);
 
     CommentDto addComment(Long userId, Long itemId, CommentDto commentDto);
 }

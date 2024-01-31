@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.errors.IncorrectUserException;
 import ru.practicum.shareit.item.errors.ItemNotFoundException;
@@ -53,14 +54,14 @@ public class DBItemDao implements ItemDao {
     }
 
     @Override
-    public Set<ItemEntity> getByOwner(UserEntity user) {
-        return itemRepository.getItemEntityByOwner(user);
+    public Set<ItemEntity> getByOwner(UserEntity user, Pageable pageable) {
+        return itemRepository.getItemEntityByOwner(user, pageable).toSet();
     }
 
     @Override
-    public Set<ItemEntity> search(String text) {
+    public Set<ItemEntity> search(String text, Pageable pageable) {
         return itemRepository
                 .getItemEntityByDescriptionContainsIgnoreCaseAndAvailableIsTrueOrNameContainsIgnoreCaseAndAvailableIsTrue(
-                        text.toLowerCase(), text.toLowerCase());
+                        text.toLowerCase(), text.toLowerCase(), pageable).toSet();
     }
 }
