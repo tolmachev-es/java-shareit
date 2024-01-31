@@ -23,7 +23,7 @@ public class ItemEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "OWNER_ID", nullable = false)
     private UserEntity owner;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "ITEM_REQUEST_ID")
     private ItemRequestEntity itemRequest;
 }

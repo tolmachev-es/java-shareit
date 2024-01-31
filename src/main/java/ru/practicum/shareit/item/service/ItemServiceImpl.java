@@ -16,6 +16,9 @@ import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestEntity;
+import ru.practicum.shareit.request.mappers.ItemRequestMapper;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
@@ -34,11 +37,13 @@ public class ItemServiceImpl implements ItemService {
     private final UserDao userDao;
     private final CommentDao commentDao;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
         Item newItem = ItemMapper.ITEM_MAPPER.fromDto(item);
         newItem.setOwner(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+        newItem.setItemRequest(item.getRequestId() != null ? ItemRequestMapper.ITEM_REQUEST_MAPPER.fromEntity(itemRequestRepository.getById(item.getRequestId())) : null);
         Item createItem = ItemMapper.ITEM_MAPPER.fromEntity(
                 itemDao.create(ItemMapper.ITEM_MAPPER.toEntity(newItem)));
         return ItemMapper.ITEM_MAPPER.toDto(createItem);
