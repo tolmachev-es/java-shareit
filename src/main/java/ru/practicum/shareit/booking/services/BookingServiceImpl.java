@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.services;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
@@ -93,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Set<BookingDtoResponse> getByBooker(String bookingState, Long userId) {
+    public Set<BookingDtoResponse> getByBooker(String bookingState, Long userId, Integer from, Integer size) {
         userDao.getUserById(userId);
         BookingState bookingStateEnum;
         try {
@@ -102,26 +104,31 @@ public class BookingServiceImpl implements BookingService {
             throw new UnsupportedMethod(String.format("Unknown state: %s", bookingState));
         }
         Set<BookingEntity> result = null;
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (bookingStateEnum) {
             case ALL:
-                result = bookingRepository.findBookingEntitiesByBooker_Id(userId);
+                result = bookingRepository.findBookingEntitiesByBooker_IdOrderByIdDesc(
+                        userId, pageable).toSet();
                 break;
             case PAST:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndEndBefore(userId, LocalDateTime.now());
+                result = bookingRepository.findBookingEntitiesByBooker_IdAndEndBefore(
+                        userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case FUTURE:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStartAfter(userId, LocalDateTime.now());
+                result = bookingRepository.findBookingEntitiesByBooker_IdAndStartAfter(
+                        userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case CURRENT:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(userId,
-                        LocalDateTime.now(),
-                        LocalDateTime.now());
+                result = bookingRepository.findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(
+                        userId, LocalDateTime.now(), LocalDateTime.now(), pageable).toSet();
                 break;
             case WAITING:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStatus(userId, BookingStatus.WAITING);
+                result = bookingRepository.findBookingEntitiesByBooker_IdAndStatus(
+                        userId, BookingStatus.WAITING, pageable).toSet();
                 break;
             case REJECTED:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
+                result = bookingRepository.findBookingEntitiesByBooker_IdAndStatus(
+                        userId, BookingStatus.REJECTED, pageable).toSet();
                 break;
         }
         return result.stream()
@@ -133,9 +140,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Set<BookingDtoResponse> getByOwner(String bookingState, Long userId) {
+    public Set<BookingDtoResponse> getByOwner(String bookingState, Long userId, Integer from, Integer size) {
         userDao.getUserById(userId);
         BookingState bookingStateEnum;
+        Pageable pageable = PageRequest.of(from / size, size);
         try {
             bookingStateEnum = BookingState.valueOf(bookingState);
         } catch (Exception e) {
@@ -144,23 +152,28 @@ public class BookingServiceImpl implements BookingService {
         Set<BookingEntity> result = null;
         switch (bookingStateEnum) {
             case ALL:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerId(userId);
+                result = bookingRepository.findBookingEntitiesByItem_OwnerIdOrderByIdDesc(
+                        userId, pageable).toSet();
                 break;
             case PAST:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndEndBefore(userId, LocalDateTime.now());
+                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndEndBefore(
+                        userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case FUTURE:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStartAfter(userId, LocalDateTime.now());
+                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStartAfter(
+                        userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case CURRENT:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(
+                        userId, LocalDateTime.now(), LocalDateTime.now(), pageable).toSet();
                 break;
             case WAITING:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(userId, BookingStatus.WAITING);
+                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(
+                        userId, BookingStatus.WAITING, pageable).toSet();
                 break;
             case REJECTED:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(userId, BookingStatus.REJECTED);
+                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(
+                        userId, BookingStatus.REJECTED, pageable).toSet();
                 break;
         }
         return result.stream()
