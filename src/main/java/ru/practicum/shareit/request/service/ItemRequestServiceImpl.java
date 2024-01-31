@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.request.dao.ItemRequestEntity;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.exception.IncorrectPaginationParameters;
+import ru.practicum.shareit.request.exception.ItemRequestNotFound;
 import ru.practicum.shareit.request.mappers.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -99,7 +100,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             }
             return itemRequest;
         } else {
-            throw new RuntimeException("Запрос с таким id не найден");
+            throw new ItemRequestNotFound("Запрос с таким id не найден");
         }
     }
 
