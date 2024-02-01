@@ -18,5 +18,5 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
     Set<ItemEntity> getItemEntitiesByItemRequestNotNull();
 
-    Set<ItemEntity> getItemEntitiesByItemRequest_Id(Long itemRequest_id);
+    Set<ItemEntity> getItemEntitiesByItemRequest_Id(Long itemRequestId);
 }

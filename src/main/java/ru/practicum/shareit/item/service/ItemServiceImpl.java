@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
-import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
@@ -26,6 +25,7 @@ import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;

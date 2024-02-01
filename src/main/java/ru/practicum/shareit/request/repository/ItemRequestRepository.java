@@ -12,5 +12,5 @@ import java.util.Set;
 public interface ItemRequestRepository extends JpaRepository<ItemRequestEntity, Long> {
     Set<ItemRequestEntity> findItemRequestEntitiesByRequestor_Id(Long userId);
 
-    Page<ItemRequestEntity> findAllByRequestor_IdNotOrderByCreated(Long requestor_id, Pageable pageable);
+    Page<ItemRequestEntity> findAllByRequestor_IdNotOrderByCreated(Long requestorId, Pageable pageable);
 }
