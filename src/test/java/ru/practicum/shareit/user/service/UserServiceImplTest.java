@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.persistence.TypedQuery;
-
 import java.util.List;
 import java.util.Set;
 
