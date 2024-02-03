@@ -1,40 +1,30 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Template;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dao.BookingRepository;
-import ru.practicum.shareit.item.dao.CommentDao;
-import ru.practicum.shareit.item.dao.DBCommentDao;
 import ru.practicum.shareit.item.dao.DBItemDao;
-import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dao.ItemEntity;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.DBUserDao;
-import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.persistence.TypedQuery;
-import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 @Transactional
 @SpringJUnitConfig({ItemServiceImpl.class, DBItemDao.class})
@@ -45,34 +35,57 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = {"ru.practicum.shareit"})
 class ItemServiceImplTest {
 
-    @Mock
+    private final ItemServiceImpl itemService;
     private final DBUserDao userDao;
-    @Mock
-    private final DBCommentDao commentDao;
-    private final DBItemDao itemDao;
-    @Mock
-    private final BookingRepository bookingRepository;
-    @Mock
-    private final ItemRequestRepository itemRequestRepository;
-    private DataSource dataSource;
+    private final TestEntityManager testEntityManager;
+
+    @BeforeEach
+    @DirtiesContext
+    void createUser() {
+        UserEntity user1 = new UserEntity();
+        user1.setName("Neo");
+        user1.setEmail("theone@matrix.com");
+        userDao.create(user1);
+        UserEntity user2 = new UserEntity();
+        user2.setName("Trinity");
+        user2.setEmail("ilovetheone@matrix.com");
+        userDao.create(user2);
+    }
 
     @Test
+    @DirtiesContext
     void createItem() {
-        UserEntity user = new UserEntity();
-        user.setId(1L);
-        user.setName("Neo");
-        user.setEmail("theone@matrix.com");
-        ItemServiceImpl itemService = new ItemServiceImpl(itemDao,
-                userDao,
-                commentDao,
-                bookingRepository,
-                itemRequestRepository);
-        Mockito.when(userDao.getUserById(Mockito.anyLong())).thenReturn(user);
         ItemDto itemDto = new ItemDto();
         itemDto.setName("Red Pill");
         itemDto.setDescription("eat and wake up");
         itemDto.setAvailable(true);
         itemService.create(itemDto, 1L);
+        TypedQuery<ItemEntity> query = testEntityManager
+                .getEntityManager()
+                .createQuery("select i from ItemEntity as i where id = :id", ItemEntity.class);
+        ItemEntity entity = query.setParameter("id", 1L).getSingleResult();
+        assertThat(entity.getId(), notNullValue());
+        assertThat(entity.getName(), equalTo(itemDto.getName()));
+        assertThat(entity.getDescription(), equalTo(itemDto.getDescription()));
+        assertThat(entity.getOwner().getId(), equalTo(1L));
+    }
+
+    @Test
+    @DirtiesContext
+    void getAllItem() {
+        ItemDto itemDto1 = new ItemDto();
+        itemDto1.setName("Red Pill");
+        itemDto1.setDescription("eat and wake up");
+        itemDto1.setAvailable(true);
+        ItemDto itemDto2 = new ItemDto();
+        itemDto2.setName("Blue Pill");
+        itemDto2.setDescription("eat and sleep");
+        itemDto2.setAvailable(true);
+        itemService.create(itemDto1, 1L);
+        itemService.create(itemDto2, 2L);
+        List<ItemDto> all = new ArrayList<>(itemService.getAllByOwner(1L, 0, 10));
+        assertThat(all.size(), equalTo(1));
+        assertThat(all.get(0).getId(), equalTo(1L));
     }
 
 }
