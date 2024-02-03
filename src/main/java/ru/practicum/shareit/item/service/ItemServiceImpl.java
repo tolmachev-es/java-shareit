@@ -1,9 +1,9 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.booking.dao.BookingEntity;
@@ -25,17 +25,14 @@ import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    @Qualifier("DBItemDao")
     private final ItemDao itemDao;
-    @Qualifier("DBUserDao")
     private final UserDao userDao;
     private final CommentDao commentDao;
     private final BookingRepository bookingRepository;
@@ -45,7 +42,9 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(ItemDto item, long userId) {
         Item newItem = ItemMapper.ITEM_MAPPER.fromDto(item);
         newItem.setOwner(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
-        newItem.setItemRequest(item.getRequestId() != null ? ItemRequestMapper.ITEM_REQUEST_MAPPER.fromEntity(itemRequestRepository.getById(item.getRequestId())) : null);
+        newItem.setItemRequest(item.getRequestId() != null ?
+                ItemRequestMapper.ITEM_REQUEST_MAPPER.fromEntity(
+                        itemRequestRepository.getById(item.getRequestId())) : null);
         Item createItem = ItemMapper.ITEM_MAPPER.fromEntity(
                 itemDao.create(ItemMapper.ITEM_MAPPER.toEntity(newItem)));
         return ItemMapper.ITEM_MAPPER.toDto(createItem);
