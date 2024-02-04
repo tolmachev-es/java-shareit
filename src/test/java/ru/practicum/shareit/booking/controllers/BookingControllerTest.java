@@ -23,6 +23,7 @@ import ru.practicum.shareit.booking.services.BookingServiceImpl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -140,6 +141,27 @@ class BookingControllerTest {
                 .header("X-Sharer-User-Id", 1L)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
+    }
 
+    @Test
+    void approvedWithoutBookingId() throws Exception {
+        given(bookingService.approve(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyBoolean()))
+                .willReturn(bookingDtoResponse);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/bookings/{id}?approved=true", 1)
+                        .header("X-Sharer-User-Id", 1)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void getAllByBooker() throws Exception {
+        given(bookingService.getByBooker(Mockito.any(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
+                .willReturn(Set.of(bookingDtoResponse));
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/bookings?state=ALL")
+                .header("X-Sharer-User-Id", 1L)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
     }
 }
