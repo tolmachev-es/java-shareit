@@ -43,7 +43,6 @@ class BookingControllerTest {
 
     @BeforeEach
     void init() {
-
         bookingDtoRequest = new BookingDtoRequest();
         bookingDtoRequest.setItemId(1L);
         bookingDtoRequest.setStart(LocalDateTime.of(LocalDate.now(), LocalTime.now().plusHours(2)));
@@ -134,9 +133,9 @@ class BookingControllerTest {
         given(bookingService.create(Mockito.any(), Mockito.anyLong()))
                 .willReturn(bookingDtoResponse);
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/bookings/{id}", 1)
-                .header("X-Sharer-User-Id", 1L)
-                .accept(MediaType.APPLICATION_JSON))
+                        .get("/bookings/{id}", 1)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
 
@@ -156,9 +155,20 @@ class BookingControllerTest {
         given(bookingService.getByBooker(Mockito.any(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .willReturn(Set.of(bookingDtoResponse));
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/bookings?state=ALL")
-                .header("X-Sharer-User-Id", 1L)
-                .accept(MediaType.APPLICATION_JSON))
+                        .get("/bookings?state=ALL")
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void getAllByOwner() throws Exception {
+        given(bookingService.getByOwner(Mockito.any(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
+                .willReturn(Set.of(bookingDtoResponse));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/bookings?state=ALL")
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
 }
