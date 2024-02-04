@@ -129,7 +129,11 @@ class ItemServiceImplTest {
         assertThat(entity.getId(), equalTo(1L));
         assertThat(entity.getText(), equalTo(commentDto.getText()));
         assertThat(entity.getAuthor().getId(), equalTo(2L));
+    }
 
+    @Test
+    @DirtiesContext
+    void getById() {
 
     }
 }
