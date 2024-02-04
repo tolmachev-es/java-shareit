@@ -192,4 +192,23 @@ class ItemServiceImplTest {
         Set<ItemDto> search = itemService.search("red", 0, 10);
         assertThat(search.size(), equalTo(2));
     }
+
+    @Test
+    @DirtiesContext
+    void updateWithout() {
+        ItemDto itemDto1 = new ItemDto();
+        itemDto1.setName("Red Pill");
+        itemDto1.setDescription("eat and wake up");
+        itemDto1.setAvailable(true);
+        itemService.create(itemDto1, 1L);
+
+        ItemDto itemDto2 = new ItemDto();
+        itemDto2.setAvailable(false);
+        itemService.update(itemDto2, 1L, 1L);
+
+        ItemDto getItem = itemService.get(1L, 1L);
+        assertThat(getItem.getName(), equalTo(itemDto1.getName()));
+        assertThat(getItem.getDescription(), equalTo(itemDto1.getDescription()));
+        assertThat(getItem.getAvailable(), equalTo(false));
+    }
 }
