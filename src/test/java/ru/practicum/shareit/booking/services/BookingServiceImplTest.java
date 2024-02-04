@@ -110,4 +110,19 @@ class BookingServiceImplTest {
                         .getByBooker("WAITING", 1L, 0, 20));
         assertThat(responseListBooker2.size(), equalTo(0));
     }
+
+    @Test
+    @DirtiesContext
+    void getById() {
+        BookingDtoRequest bookingDtoRequest = new BookingDtoRequest();
+        bookingDtoRequest.setItemId(1L);
+        bookingDtoRequest.setStart(LocalDateTime.MIN);
+        bookingDtoRequest.setEnd(LocalDateTime.MAX);
+        bookingService.create(bookingDtoRequest, 2L);
+
+        BookingDtoResponse response = bookingService.get(1L, 2L);
+
+        assertThat(response.getId(), equalTo(1L));
+    }
+
 }

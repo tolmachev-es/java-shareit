@@ -1,17 +1,15 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.dao.DBCommentDao;
 import ru.practicum.shareit.item.dao.DBItemDao;
 import ru.practicum.shareit.item.dao.ItemEntity;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -26,18 +24,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-@Transactional
-@SpringJUnitConfig({ItemServiceImpl.class, DBItemDao.class})
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
-@AutoConfigureMockMvc
-@DataJpaTest
+@SpringJUnitConfig({ItemServiceImpl.class, DBItemDao.class, DBUserDao.class, DBCommentDao.class})
+@DataJpaTest(showSql = false)
 @EntityScan(basePackages = {"ru.practicum.shareit"})
 @ComponentScan(basePackages = {"ru.practicum.shareit"})
 class ItemServiceImplTest {
+    @Autowired
+    private ItemServiceImpl itemService;
+    @Autowired
+    private DBUserDao userDao;
+    @Autowired
+    private TestEntityManager testEntityManager;
 
-    private final ItemServiceImpl itemService;
-    private final DBUserDao userDao;
-    private final TestEntityManager testEntityManager;
 
     @BeforeEach
     @DirtiesContext
