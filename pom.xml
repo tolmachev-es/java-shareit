@@ -198,6 +198,10 @@
                             <exclude>ru.practicum.shareit.booking.mappers</exclude>
                             <exclude>ru.practicum.shareit.request.mappers</exclude>
                             <exclude>ru.practicum.shareit.user.mappers</exclude>
+                            <exclude>ru.practicum.shareit.item.dto</exclude>
+                            <exclude>ru.practicum.shareit.user.dto</exclude>
+                            <exclude>ru.practicum.shareit.request.dto</exclude>
+                            <exclude>ru.practicum.shareit.booking.dto</exclude>
                         </excludes>
                     </configuration>
                     <executions>

@@ -108,4 +108,25 @@ class UserServiceImplTest {
         assertThat(users.size(), equalTo(3));
     }
 
+    @Test
+    @DirtiesContext
+    void getById() {
+        UserDto user1 = new UserDto();
+        user1.setName("name1");
+        user1.setEmail("email1@yandex.ru");
+        userService.create(user1);
+        UserDto user2 = new UserDto();
+        user2.setName("name2");
+        user2.setEmail("email2@yandex.ru");
+        userService.create(user2);
+        UserDto user3 = new UserDto();
+        user3.setName("name3");
+        user3.setEmail("email3@yandex.ru");
+        userService.create(user3);
+
+        UserDto user = userService.getById(2L);
+        assertThat(user.getEmail(), equalTo(user2.getEmail()));
+        assertThat(user.getName(), equalTo(user2.getName()));
+    }
+
 }

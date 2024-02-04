@@ -166,9 +166,11 @@ class BookingControllerTest {
         given(bookingService.getByOwner(Mockito.any(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .willReturn(Set.of(bookingDtoResponse));
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/bookings?state=ALL")
+                        .get("/bookings/owner?state=ALL")
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
+
+
 }

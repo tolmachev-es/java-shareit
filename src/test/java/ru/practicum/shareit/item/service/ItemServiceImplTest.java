@@ -22,9 +22,12 @@ import ru.practicum.shareit.user.dao.DBUserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import javax.persistence.TypedQuery;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -134,6 +137,59 @@ class ItemServiceImplTest {
     @Test
     @DirtiesContext
     void getById() {
+        ItemDto itemDto1 = new ItemDto();
+        itemDto1.setName("Red Pill");
+        itemDto1.setDescription("eat and wake up");
+        itemDto1.setAvailable(true);
+        itemService.create(itemDto1, 1L);
 
+        BookingEntity bookingEntity2 = new BookingEntity();
+        bookingEntity2.setItem(itemDao.get(1L));
+        bookingEntity2.setStatus(BookingStatus.APPROVED);
+        bookingEntity2.setStart(LocalDateTime.of(LocalDate.now().plusDays(2), LocalTime.now()));
+        bookingEntity2.setEnd(LocalDateTime.MAX);
+        bookingEntity2.setBooker(userDao.getUserById(2L));
+        bookingRepository.save(bookingEntity2);
+
+        ItemDto itemDtoUpdate = new ItemDto();
+        itemDtoUpdate.setName("Red Pill1");
+        itemDtoUpdate.setDescription("eat and wake up1");
+        itemDtoUpdate.setAvailable(true);
+
+
+        ItemDto itemDto2 = itemService.get(1L, 1L);
+        assertThat(itemDto2.getLastBooking(), equalTo(null));
+        assertThat(itemDto2.getName(), equalTo(itemDto1.getName()));
+        assertThat(itemDto2.getDescription(), equalTo(itemDto1.getDescription()));
+        assertThat(itemDto2.getNextBooking().getId(), equalTo(1L));
+
+
+        itemService.update(itemDtoUpdate, 1L, 1L);
+        ItemDto itemDto3 = itemService.get(1L, 1L);
+        assertThat(itemDto3.getLastBooking(), equalTo(null));
+        assertThat(itemDto3.getName(), equalTo(itemDtoUpdate.getName()));
+        assertThat(itemDto3.getDescription(), equalTo(itemDtoUpdate.getDescription()));
+        assertThat(itemDto3.getNextBooking().getId(), equalTo(1L));
+    }
+
+
+    @Test
+    @DirtiesContext
+    void search() {
+        ItemDto itemDto1 = new ItemDto();
+        itemDto1.setName("Red Pill");
+        itemDto1.setDescription("eat and wake up");
+        itemDto1.setAvailable(true);
+        itemService.create(itemDto1, 1L);
+
+        ItemDto itemDto2 = new ItemDto();
+        itemDto2.setName("Blue Pill");
+        itemDto2.setDescription("NOT RED pill");
+        itemDto2.setAvailable(true);
+        itemService.create(itemDto1, 2L);
+
+
+        Set<ItemDto> search = itemService.search("red", 0, 10);
+        assertThat(search.size(), equalTo(2));
     }
 }
