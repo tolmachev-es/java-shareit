@@ -45,7 +45,7 @@ class BookingControllerTest {
     void init() {
         bookingDtoRequest = new BookingDtoRequest();
         bookingDtoRequest.setItemId(1L);
-        bookingDtoRequest.setStart(LocalDateTime.of(LocalDate.now(), LocalTime.now().plusHours(2)));
+        bookingDtoRequest.setStart(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.now().plusMinutes(2)));
         bookingDtoRequest.setEnd(LocalDateTime.MAX);
         bookingDtoResponse = new BookingDtoResponse();
         bookingDtoResponse.setId(1L);
