@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import ru.practicum.shareit.user.dao.UserEntity;
 
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,6 +40,7 @@ class ItemRequestServiceImplTest {
     private final UserDao userDao;
     private final TestEntityManager testEntityManager;
     private final ItemDao itemDao;
+    private final JdbcTemplate jdbcTemplate;
 
     @Test
     @DirtiesContext
@@ -106,5 +109,68 @@ class ItemRequestServiceImplTest {
 
         Set<ItemRequestDto> requestDtos = itemRequestService.getWithPagination(2L, 0, 10);
         assertThat(requestDtos.size(), equalTo(1));
+    }
+
+    @Test
+    @DirtiesContext
+    void getByUserId() {
+        UserEntity user1 = new UserEntity();
+        user1.setName("Neo");
+        user1.setEmail("theone@matrix.com");
+        userDao.create(user1);
+
+        ItemRequestDto itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setCreated(LocalDateTime.MIN);
+        itemRequestDto.setDescription("Ищу отвертку");
+        itemRequestService.create(itemRequestDto, 1L);
+
+        TypedQuery<ItemRequestEntity> query = testEntityManager
+                .getEntityManager()
+                .createQuery("select i from ItemRequestEntity as i where id = :id", ItemRequestEntity.class);
+        ItemRequestEntity entity = query.setParameter("id", 1L).getSingleResult();
+
+        ItemEntity itemEntity = new ItemEntity();
+        itemEntity.setName("Red Pill");
+        itemEntity.setDescription("eat and wake up");
+        itemEntity.setAvailable(true);
+        itemEntity.setOwner(user1);
+        itemEntity.setItemRequest(entity);
+        itemDao.create(itemEntity);
+
+        Set<ItemRequestDto> itemRequestDto1 = itemRequestService.get(1L);
+        assertThat(itemRequestDto1.size(), equalTo(1));
+        assertThat(new ArrayList<>(itemRequestDto1).get(0).getItems().size(), equalTo(1));
+        assertThat(new ArrayList<>(new ArrayList<>(itemRequestDto1).get(0).getItems()).get(0).getId(),
+                equalTo(1L));
+    }
+
+    @Test
+    @DirtiesContext
+    void getByUserIdAndRequestId() {
+        UserEntity user1 = new UserEntity();
+        user1.setName("Neo");
+        user1.setEmail("theone@matrix.com");
+        userDao.create(user1);
+
+        ItemRequestDto itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setCreated(LocalDateTime.MIN);
+        itemRequestDto.setDescription("Ищу отвертку");
+        itemRequestService.create(itemRequestDto, 1L);
+
+        TypedQuery<ItemRequestEntity> query = testEntityManager
+                .getEntityManager()
+                .createQuery("select i from ItemRequestEntity as i where id = :id", ItemRequestEntity.class);
+        ItemRequestEntity entity = query.setParameter("id", 1L).getSingleResult();
+
+        ItemEntity itemEntity = new ItemEntity();
+        itemEntity.setName("Red Pill");
+        itemEntity.setDescription("eat and wake up");
+        itemEntity.setAvailable(true);
+        itemEntity.setOwner(user1);
+        itemEntity.setItemRequest(entity);
+        itemDao.create(itemEntity);
+
+        ItemRequestDto itemRequestDto1 = itemRequestService.getById(1L, 1L);
+        assertThat(itemRequestDto1.getItems().size(), equalTo(1));
     }
 }
