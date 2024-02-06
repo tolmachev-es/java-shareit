@@ -1,13 +1,18 @@
 package ru.practicum.shareit.item.dao;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
-import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
+import ru.practicum.shareit.booking.dao.BookingRepository;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.dao.DBUserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import java.util.Optional;
@@ -17,79 +22,80 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@SpringJUnitConfig
+@Transactional
+@EntityScan(basePackages = {"ru.practicum.shareIt"})
 class DBItemDaoTest {
-    private static DBItemDao dao;
-    private static ItemRepository itemRepository;
-    private ItemEntity item1;
-    private ItemEntity item2;
+    private ItemServiceImpl itemService;
+    private ItemRepository itemRepository;
+    private DBUserDao userDao;
+    private ItemEntity item;
     private UserEntity user1;
     private UserEntity user2;
-
-    @BeforeAll
-    static void init() {
-        itemRepository = Mockito.mock(ItemRepository.class);
-        dao = new DBItemDao(itemRepository);
-    }
+    private BookingRepository bookingRepository;
 
     @BeforeEach
     void setUp() {
+        itemRepository = Mockito.mock(ItemRepository.class);
+        ItemDao itemDto = new DBItemDao(itemRepository);
+        bookingRepository = Mockito.mock(BookingRepository.class);
+        CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
+        ItemRequestRepository itemRequestRepository = Mockito.mock(ItemRequestRepository.class);
+        CommentDao commentDao = new DBCommentDao(commentRepository);
+        userDao = Mockito.mock(DBUserDao.class);
+        itemService = new ItemServiceImpl(itemDto,
+                userDao, commentDao, bookingRepository, itemRequestRepository);
         user1 = new UserEntity();
         user1.setId(1L);
-        user1.setName("Neo");
-        user1.setEmail("theone@matrix.com");
+        user1.setName("egor");
+        user1.setEmail("egor@mock.com");
 
         user2 = new UserEntity();
         user2.setId(2L);
-        user2.setName("Trinity");
-        user2.setEmail("ilovetheone@matrix.com");
+        user2.setName("neegor");
+        user2.setEmail("neegor@mock.com");
 
-        item1 = new ItemEntity();
-        item1.setId(1L);
-        item1.setName("Red pill");
-        item1.setDescription("take and wake up");
-        item1.setAvailable(true);
-        item1.setOwner(user1);
-
-        item2 = new ItemEntity();
-        item2.setId(1L);
-        item2.setName("Red pill");
-        item2.setDescription("take and wake up");
-        item2.setAvailable(true);
-        item2.setOwner(user2);
+        item = new ItemEntity();
+        item.setId(1L);
+        item.setName("knife");
+        item.setDescription("rezat'");
+        item.setAvailable(false);
+        item.setOwner(user1);
     }
 
     @Test
-    void getEmptyItem() {
-        Optional<ItemEntity> item = Optional.empty();
-        Mockito.when(itemRepository.getItemEntityById(1L))
-                .thenReturn(item);
-        ObjectNotFound objectNotFound = assertThrows(ObjectNotFound.class,
-                () -> dao.get(1L));
-        assertThat(objectNotFound.getMessage(),
-                equalTo(String.format("Вещь с id %s не найдена", 1L)));
-    }
-
-    @Test
-    void getItem() {
-        Optional<ItemEntity> itemGet = Optional.of(item1);
-        Mockito.when(itemRepository.getItemEntityById(1L))
-                .thenReturn(itemGet);
-        ItemEntity getItem = dao.get(1L);
-        assertThat(getItem.getId(), equalTo(1L));
-        assertThat(getItem.getName(), equalTo("Red pill"));
-    }
-
-    @Test
-    void updateWithException() {
-        Optional<ItemEntity> itemGet = Optional.of(item1);
+    void updateItemError() {
+        Mockito.when(userDao.getUserById(Mockito.anyLong()))
+                .thenReturn(user2);
         Mockito.when(itemRepository.getItemEntityById(Mockito.anyLong()))
-                .thenReturn(itemGet);
-        InvalidParameterException invalidParameterException = assertThrows(InvalidParameterException.class,
-                () -> dao.update(item2));
+                .thenReturn(Optional.of(item));
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setDescription("silno rezat'");
+        itemDto.setAvailable(true);
+        item.setName("sword");
+
+        InvalidParameterException invalidParameterException =
+                assertThrows(InvalidParameterException.class,
+                        () -> itemService.update(itemDto, 2L, 1L));
+
         assertThat(invalidParameterException.getMessage(),
-                equalTo(String.format("Пользователь %s не не имеет прав для редактирования вещи %s",
-                        user2.getId(),
-                        item1.getId())));
+                equalTo("Пользователь 2 не не имеет прав для редактирования вещи 1"));
+    }
+
+    @Test
+    void addComment() {
+        Mockito.when(bookingRepository
+                        .findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(
+                                Mockito.anyLong(), Mockito.anyLong(), Mockito.any()))
+                .thenReturn(Optional.empty());
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setText("horosho");
+        commentDto.setAuthorName("neo");
+
+        InvalidParameterException invalidParameterException =
+                assertThrows(InvalidParameterException.class,
+                        () -> itemService.addComment(1L, 1L, commentDto));
+        assertThat(invalidParameterException.getMessage(), equalTo("Бронирование вещи с id 1 не найдено"));
     }
 }

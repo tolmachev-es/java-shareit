@@ -128,6 +128,15 @@ class ItemControllerTest {
     }
 
     @Test
+    void searchEmptyItem() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/items?text=pill")
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
     void addComment() throws Exception {
         given(itemService.addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any()))
                 .willReturn(commentDto1);
