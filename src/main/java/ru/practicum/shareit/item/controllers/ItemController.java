@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -88,13 +87,8 @@ public class ItemController {
     public Set<ItemDto> search(@RequestParam String text,
                                @RequestParam(defaultValue = "0") Integer from,
                                @RequestParam(defaultValue = "10") Integer size) {
-        if (text.isBlank()) {
-            log.info("Получен запрос на поиск с пустым значением в запросе");
-            return new HashSet<>();
-        } else {
-            log.info("Получен запрос на поиск с текстом {}", text);
-            return itemService.search(text, from, size);
-        }
+        log.info("Получен запрос на поиск с текстом {}", text);
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

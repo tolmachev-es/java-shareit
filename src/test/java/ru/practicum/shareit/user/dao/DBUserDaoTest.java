@@ -6,7 +6,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.HeadExeptions.ConflictException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -19,7 +18,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@Transactional
 @SpringJUnitConfig
 class DBUserDaoTest {
     private UserServiceImpl userService;

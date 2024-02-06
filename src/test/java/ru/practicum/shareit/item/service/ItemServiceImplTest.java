@@ -137,5 +137,8 @@ class ItemServiceImplTest {
         assertThat(itemUp.getName(), equalTo(itemDtoUp.getName()));
         assertThat(itemUp.getDescription(), equalTo(itemDtoUp.getDescription()));
         assertThat(itemUp.getItemRequest(), equalTo(request));
+
+        Set<ItemDto> emptyList = itemService.search("", 0, 10);
+        assertThat(emptyList.size(), equalTo(0));
     }
 }

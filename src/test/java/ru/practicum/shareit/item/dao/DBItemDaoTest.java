@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
+import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -19,10 +19,10 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@Transactional
 @EntityScan(basePackages = {"ru.practicum.shareIt"})
 class DBItemDaoTest {
     private ItemServiceImpl itemService;
@@ -32,17 +32,18 @@ class DBItemDaoTest {
     private UserEntity user1;
     private UserEntity user2;
     private BookingRepository bookingRepository;
+    private ItemDao itemDao;
 
     @BeforeEach
     void setUp() {
         itemRepository = Mockito.mock(ItemRepository.class);
-        ItemDao itemDto = new DBItemDao(itemRepository);
+        itemDao = new DBItemDao(itemRepository);
         bookingRepository = Mockito.mock(BookingRepository.class);
         CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
         ItemRequestRepository itemRequestRepository = Mockito.mock(ItemRequestRepository.class);
         CommentDao commentDao = new DBCommentDao(commentRepository);
         userDao = Mockito.mock(DBUserDao.class);
-        itemService = new ItemServiceImpl(itemDto,
+        itemService = new ItemServiceImpl(itemDao,
                 userDao, commentDao, bookingRepository, itemRequestRepository);
         user1 = new UserEntity();
         user1.setId(1L);
@@ -97,5 +98,34 @@ class DBItemDaoTest {
                 assertThrows(InvalidParameterException.class,
                         () -> itemService.addComment(1L, 1L, commentDto));
         assertThat(invalidParameterException.getMessage(), equalTo("Бронирование вещи с id 1 не найдено"));
+    }
+
+    @Test
+    void getNotFoundItem() {
+        Mockito.when(itemRepository.getItemEntityById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        ObjectNotFound objectNotFound = assertThrows(ObjectNotFound.class, () -> itemService.get(1L, 1L));
+        assertThat(objectNotFound.getMessage(), equalTo("Вещь с id 1 не найдена"));
+    }
+
+    @Test
+    void getItemWithBooking() {
+        Mockito.when(itemRepository.getItemEntityById(Mockito.anyLong()))
+                .thenReturn(Optional.of(item));
+
+        Mockito.when(bookingRepository
+                        .findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
+                                Mockito.anyLong(), Mockito.any(), Mockito.any()))
+                .thenReturn(Optional.empty());
+
+        Mockito.when(bookingRepository
+                        .findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
+                                Mockito.anyLong(), Mockito.any(), Mockito.any()))
+                .thenReturn(Optional.empty());
+
+        ItemDto getItem = itemService.get(1L, 1L);
+        assertThat(getItem.getNextBooking(), nullValue());
+        assertThat(getItem.getLastBooking(), nullValue());
     }
 }

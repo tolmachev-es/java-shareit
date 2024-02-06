@@ -25,6 +25,7 @@ import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -89,6 +90,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Set<ItemDto> search(String text, Integer from, Integer size) {
+        if (text.isBlank()) {
+            return new HashSet<>();
+        }
         Pageable pageable = PageRequest.of(from / size, size);
         Set<Item> items = itemDao.search(text, pageable).stream()
                 .map(ItemMapper.ITEM_MAPPER::fromEntity)
