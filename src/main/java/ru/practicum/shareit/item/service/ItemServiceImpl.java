@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.booking", "ru.practicum.shareit.request"})
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.booking.dao", "ru.practicum.shareit.request.dao"})
 public class ItemServiceImpl implements ItemService {
     private final ItemDao itemDao;
     private final UserDao userDao;

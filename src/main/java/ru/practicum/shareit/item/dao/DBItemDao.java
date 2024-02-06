@@ -16,7 +16,7 @@ import java.util.Set;
 @Component
 @Slf4j
 @AllArgsConstructor
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = "ru.practicum.shareit.item.dao")
 public class DBItemDao implements ItemDao {
     private final ItemRepository itemRepository;
 
