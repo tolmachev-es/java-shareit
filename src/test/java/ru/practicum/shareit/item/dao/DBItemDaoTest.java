@@ -29,15 +29,13 @@ class DBItemDaoTest {
     private ItemRepository itemRepository;
     private DBUserDao userDao;
     private ItemEntity item;
-    private UserEntity user1;
     private UserEntity user2;
     private BookingRepository bookingRepository;
-    private ItemDao itemDao;
 
     @BeforeEach
     void setUp() {
         itemRepository = Mockito.mock(ItemRepository.class);
-        itemDao = new DBItemDao(itemRepository);
+        ItemDao itemDao = new DBItemDao(itemRepository);
         bookingRepository = Mockito.mock(BookingRepository.class);
         CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
         ItemRequestRepository itemRequestRepository = Mockito.mock(ItemRequestRepository.class);
@@ -45,7 +43,7 @@ class DBItemDaoTest {
         userDao = Mockito.mock(DBUserDao.class);
         itemService = new ItemServiceImpl(itemDao,
                 userDao, commentDao, bookingRepository, itemRequestRepository);
-        user1 = new UserEntity();
+        UserEntity user1 = new UserEntity();
         user1.setId(1L);
         user1.setName("egor");
         user1.setEmail("egor@mock.com");
