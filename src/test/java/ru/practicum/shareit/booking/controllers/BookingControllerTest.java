@@ -2,18 +2,24 @@ package ru.practicum.shareit.booking.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -25,24 +31,28 @@ import java.time.LocalTime;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(controllers = BookingController.class)
 @ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
 class BookingControllerTest {
-    @MockBean
+    @Mock
     private BookingServiceImpl bookingService;
-    @Autowired
+    @InjectMocks
+    private BookingController controller;
     private MockMvc mockMvc;
     private BookingDtoRequest bookingDtoRequest;
     private BookingDtoResponse bookingDtoResponse;
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void init() {
+         mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .build();
+
+        objectMapper.registerModule(new JavaTimeModule());
         bookingDtoRequest = new BookingDtoRequest();
         bookingDtoRequest.setItemId(1L);
         bookingDtoRequest.setStart(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.now().plusMinutes(2)));
@@ -130,8 +140,6 @@ class BookingControllerTest {
 
     @Test
     void getBookingById() throws Exception {
-        given(bookingService.create(Mockito.any(), Mockito.anyLong()))
-                .willReturn(bookingDtoResponse);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/bookings/{id}", 1)
                         .header("X-Sharer-User-Id", 1L)
