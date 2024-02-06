@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.dao;
 
 
-
 import java.util.Set;
 
 public interface UserDao {
