@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.service;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.item", "ru.practicum.shareit.request"})
 public class ItemRequestServiceImpl implements ItemRequestService {
     private UserDao userDao;
     private ItemRequestRepository itemRequestRepository;

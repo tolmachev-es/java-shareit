@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.booking"})
 public class BookingServiceImpl implements BookingService {
     private final UserDao userDao;
     private final ItemDao itemDao;
-    private final BookingRepository bookingRepository;
+    private final BookingRepository bookingRepo;
 
     @Override
     public BookingDtoResponse create(BookingDtoRequest bookingRequest, Long userId) {
@@ -52,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
             BookingEntity createBooking = BookingMapper.BOOKING_MAPPER.toEntity(booking);
             return BookingMapper.BOOKING_MAPPER.toDto(
                     BookingMapper.BOOKING_MAPPER.fromEntity(
-                            bookingRepository.save(createBooking)));
+                            bookingRepo.save(createBooking)));
         } else {
             throw new InvalidParameterException(
                     String.format("Вещь с id %s недоступна для бронирования", bookingRequest.getItemId()));
@@ -61,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoResponse approve(Long bookingId, Long userId, boolean status) {
-        Optional<BookingEntity> findBooking = bookingRepository.findById(bookingId);
+        Optional<BookingEntity> findBooking = bookingRepo.findById(bookingId);
         if (findBooking.isPresent()) {
             if (findBooking.get().getItem().getOwner().getId().equals(userId)) {
                 if (findBooking.get().getStatus().equals(BookingStatus.APPROVED)) {
@@ -70,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
                 findBooking.get().setStatus(status ? BookingStatus.APPROVED : BookingStatus.REJECTED);
                 return BookingMapper.BOOKING_MAPPER.toDto(
                         BookingMapper.BOOKING_MAPPER.fromEntity(
-                                bookingRepository.save(findBooking.get())));
+                                bookingRepo.save(findBooking.get())));
             } else {
                 throw new ObjectNotFound(
                         String.format("Не найдено бронирование которое может подтвердить пользователь с id %s", userId));
@@ -83,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoResponse get(Long bookingId, Long userId) {
-        Optional<BookingEntity> findBooking = bookingRepository.findById(bookingId);
+        Optional<BookingEntity> findBooking = bookingRepo.findById(bookingId);
         if (findBooking.isPresent()) {
             if (findBooking.get().getItem().getOwner().getId().equals(userId)
                     || findBooking.get().getBooker().getId().equals(userId)) {
@@ -111,27 +111,27 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable = PageRequest.of(from / size, size);
         switch (bookingStateEnum) {
             case ALL:
-                result = bookingRepository.findBookingEntitiesByBooker_IdOrderByIdDesc(
+                result = bookingRepo.findBookingEntitiesByBooker_IdOrderByIdDesc(
                         userId, pageable).toSet();
                 break;
             case PAST:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndEndBefore(
+                result = bookingRepo.findBookingEntitiesByBooker_IdAndEndBefore(
                         userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case FUTURE:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStartAfter(
+                result = bookingRepo.findBookingEntitiesByBooker_IdAndStartAfter(
                         userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case CURRENT:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(
+                result = bookingRepo.findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(
                         userId, LocalDateTime.now(), LocalDateTime.now(), pageable).toSet();
                 break;
             case WAITING:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStatus(
+                result = bookingRepo.findBookingEntitiesByBooker_IdAndStatus(
                         userId, BookingStatus.WAITING, pageable).toSet();
                 break;
             case REJECTED:
-                result = bookingRepository.findBookingEntitiesByBooker_IdAndStatus(
+                result = bookingRepo.findBookingEntitiesByBooker_IdAndStatus(
                         userId, BookingStatus.REJECTED, pageable).toSet();
                 break;
         }
@@ -156,27 +156,27 @@ public class BookingServiceImpl implements BookingService {
         Set<BookingEntity> result = null;
         switch (bookingStateEnum) {
             case ALL:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdOrderByIdDesc(
+                result = bookingRepo.findBookingEntitiesByItem_OwnerIdOrderByIdDesc(
                         userId, pageable).toSet();
                 break;
             case PAST:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndEndBefore(
+                result = bookingRepo.findBookingEntitiesByItem_OwnerIdAndEndBefore(
                         userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case FUTURE:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStartAfter(
+                result = bookingRepo.findBookingEntitiesByItem_OwnerIdAndStartAfter(
                         userId, LocalDateTime.now(), pageable).toSet();
                 break;
             case CURRENT:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(
+                result = bookingRepo.findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(
                         userId, LocalDateTime.now(), LocalDateTime.now(), pageable).toSet();
                 break;
             case WAITING:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(
+                result = bookingRepo.findBookingEntitiesByItem_OwnerIdAndStatus(
                         userId, BookingStatus.WAITING, pageable).toSet();
                 break;
             case REJECTED:
-                result = bookingRepository.findBookingEntitiesByItem_OwnerIdAndStatus(
+                result = bookingRepo.findBookingEntitiesByItem_OwnerIdAndStatus(
                         userId, BookingStatus.REJECTED, pageable).toSet();
                 break;
         }
