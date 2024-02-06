@@ -21,7 +21,6 @@ import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private final UserDao userDao;
     private final ItemDao itemDao;
-    @Resource
     private final BookingRepository bookingRepositoryFromBookingService;
 
     @Override

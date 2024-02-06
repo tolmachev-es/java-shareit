@@ -28,12 +28,11 @@ import static org.hamcrest.Matchers.equalTo;
 class UserServiceImplTest {
     private final UserServiceImpl userService;
     private final TestEntityManager testEntityManager;
-    private UserDto userDto;
 
     @Test
     @DirtiesContext
     void createNewUser() {
-        userDto = new UserDto();
+        UserDto userDto = new UserDto();
         userDto.setName("Neo");
         userDto.setEmail("theOne@ihatetest.ru");
         userService.create(userDto);
