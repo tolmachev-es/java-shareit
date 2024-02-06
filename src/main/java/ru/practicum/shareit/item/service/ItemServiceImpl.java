@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -32,13 +33,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.booking.dao", "ru.practicum.shareit.request.dao"})
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.request.repository"})
 public class ItemServiceImpl implements ItemService {
     private final ItemDao itemDao;
     private final UserDao userDao;
     private final CommentDao commentDao;
-    private final BookingRepository bookingRepository;
-    private final ItemRequestRepository itemRequestRepository;
+    private final BookingRepository bookingRepositoryFromItemService;
+    private final ItemRequestRepository itemRequestRepositoryFromItemService;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
@@ -46,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
         newItem.setOwner(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
         newItem.setItemRequest(item.getRequestId() != null ?
                 ItemRequestMapper.ITEM_REQUEST_MAPPER.fromEntity(
-                        itemRequestRepository.getById(item.getRequestId())) : null);
+                        itemRequestRepositoryFromItemService.getById(item.getRequestId())) : null);
         Item createItem = ItemMapper.ITEM_MAPPER.fromEntity(
                 itemDao.create(ItemMapper.ITEM_MAPPER.toEntity(newItem)));
         return ItemMapper.ITEM_MAPPER.toDto(createItem);
@@ -104,7 +105,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
-        Optional<BookingEntity> booking = bookingRepository
+        Optional<BookingEntity> booking = bookingRepositoryFromItemService
                 .findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
         if (booking.isPresent()) {
             Comment newComment = CommentMapper.COMMENT_MAPPER.fromDto(commentDto);
@@ -120,10 +121,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto addBooking(ItemDto itemDto) {
-        Optional<BookingEntity> previousBooking = bookingRepository
+        Optional<BookingEntity> previousBooking = bookingRepositoryFromItemService
                 .findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
                         itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
-        Optional<BookingEntity> nextBooking = bookingRepository
+        Optional<BookingEntity> nextBooking = bookingRepositoryFromItemService
                 .findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
                         itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
         previousBooking.ifPresent(bookingEntity -> itemDto.setLastBooking(

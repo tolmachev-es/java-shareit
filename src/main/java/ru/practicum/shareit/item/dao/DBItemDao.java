@@ -9,6 +9,7 @@ import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.user.dao.UserEntity;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -16,8 +17,8 @@ import java.util.Set;
 @Component
 @Slf4j
 @AllArgsConstructor
-@EnableJpaRepositories(basePackages = "ru.practicum.shareit.item.dao")
 public class DBItemDao implements ItemDao {
+    @Resource
     private final ItemRepository itemRepository;
 
     @Override

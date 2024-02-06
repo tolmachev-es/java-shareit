@@ -6,7 +6,6 @@ import ru.practicum.shareit.user.dao.UserEntity;
 
 import java.util.Set;
 
-@Repository
 public interface ItemDao {
     ItemEntity create(ItemEntity item);
 
