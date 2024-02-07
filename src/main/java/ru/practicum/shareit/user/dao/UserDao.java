@@ -4,6 +4,7 @@ package ru.practicum.shareit.user.dao;
 import org.springframework.stereotype.Repository;
 
 import java.util.Set;
+
 @Repository
 public interface UserDao {
     UserEntity create(UserEntity user);

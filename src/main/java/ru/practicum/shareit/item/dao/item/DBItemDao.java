@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.dao.UserEntity;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
 @Repository
 @Slf4j
 @AllArgsConstructor

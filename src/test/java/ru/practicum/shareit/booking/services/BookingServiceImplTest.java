@@ -15,10 +15,8 @@ import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dao.item.DBItemDao;
 import ru.practicum.shareit.item.dao.item.ItemEntity;
 import ru.practicum.shareit.item.dao.item.ItemRepository;
-import ru.practicum.shareit.user.dao.DBUserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.dao.UserRepository;
 
