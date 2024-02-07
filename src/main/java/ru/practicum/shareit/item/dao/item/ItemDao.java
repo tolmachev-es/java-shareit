@@ -1,6 +1,7 @@
-package ru.practicum.shareit.item.dao;
+package ru.practicum.shareit.item.dao.item;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import java.util.Set;

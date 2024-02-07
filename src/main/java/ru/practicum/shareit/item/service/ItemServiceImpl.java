@@ -10,8 +10,8 @@ import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dao.CommentDao;
-import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dao.comment.CommentDao;
+import ru.practicum.shareit.item.dao.item.ItemDao;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.CommentMapper;
@@ -32,7 +32,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.request.repository"})
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.request.repository",
+        "ru.practicum.shareit.booking.dao.BookingRepository"})
 public class ItemServiceImpl implements ItemService {
     private final ItemDao itemDao;
     private final UserDao userDao;

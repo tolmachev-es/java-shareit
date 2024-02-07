@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dao;
+package ru.practicum.shareit.item.dao.item;
 
 import lombok.Data;
 import ru.practicum.shareit.request.dao.ItemRequestEntity;

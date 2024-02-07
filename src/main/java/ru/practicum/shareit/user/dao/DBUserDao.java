@@ -5,16 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.HeadExeptions.ConflictException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 
 import java.util.Optional;
 import java.util.Set;
 
-@Component
+@Service
 @Slf4j
 @AllArgsConstructor
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.user.dao"})
 public class DBUserDao implements UserDao {
 
     private final UserRepository userRepository;

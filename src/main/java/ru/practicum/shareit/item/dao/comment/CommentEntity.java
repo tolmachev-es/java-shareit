@@ -1,6 +1,7 @@
-package ru.practicum.shareit.item.dao;
+package ru.practicum.shareit.item.dao.comment;
 
 import lombok.Data;
+import ru.practicum.shareit.item.dao.item.ItemEntity;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import javax.persistence.*;

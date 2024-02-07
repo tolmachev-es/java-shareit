@@ -1,8 +1,9 @@
-package ru.practicum.shareit.item.dao;
+package ru.practicum.shareit.item.dao.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
@@ -11,10 +12,10 @@ import ru.practicum.shareit.user.dao.UserEntity;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
 @Repository
 @Slf4j
 @AllArgsConstructor
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.item.dao.item.ItemRepository"})
 public class DBItemDao implements ItemDao {
     private final ItemRepository itemRepository;
 

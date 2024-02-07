@@ -15,8 +15,10 @@ import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dao.ItemEntity;
-import ru.practicum.shareit.item.dao.ItemRepository;
+import ru.practicum.shareit.item.dao.item.DBItemDao;
+import ru.practicum.shareit.item.dao.item.ItemEntity;
+import ru.practicum.shareit.item.dao.item.ItemRepository;
+import ru.practicum.shareit.user.dao.DBUserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.dao.UserRepository;
 
@@ -31,10 +33,12 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringJUnitConfig
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DataJpaTest
-@EntityScan(basePackages = {"ru.practicum.shareIt"})
-@ComponentScan(basePackages = {"ru.practicum.shareIt"})
+@EntityScan(basePackages = {"ru.practicum.shareit.user.dao",
+        "ru.practicum.shareit.item.dao.item", "ru.practicum.shareit.request.dao",
+        "ru.practicum.shareit.booking.dao", "ru.practicum.shareit.item.dao.comment"})
+@ComponentScan(basePackages = {"ru.practicum.shareit"})
 class BookingServiceImplTest {
-    private final BookingServiceImpl bookingService;
+    private final BookingService bookingService;
     private final TestEntityManager testEntityManager;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
