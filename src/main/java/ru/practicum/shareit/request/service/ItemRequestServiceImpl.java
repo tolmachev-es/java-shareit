@@ -19,18 +19,16 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.request.dao", "ru.practicum.shareit.item.dao"})
 public class ItemRequestServiceImpl implements ItemRequestService {
     private UserDao userDao;
     private ItemRequestRepository itemRequestRepository;
-    @Resource
     private ItemRepository itemRepository;
 
     @Override
