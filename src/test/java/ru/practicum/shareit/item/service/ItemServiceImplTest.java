@@ -35,8 +35,8 @@ import static org.hamcrest.Matchers.nullValue;
 @SpringJUnitConfig
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DataJpaTest
-@EntityScan(basePackages = {"ru.practicum.shareIt"})
-@ComponentScan(basePackages = {"ru.practicum.shareIt"})
+@EntityScan(basePackages = {"ru.practicum.shareit"})
+@ComponentScan(basePackages = {"ru.practicum.shareit"})
 class ItemServiceImplTest {
     private final ItemService itemService;
     private final ItemRequestRepository itemRequestRepository;

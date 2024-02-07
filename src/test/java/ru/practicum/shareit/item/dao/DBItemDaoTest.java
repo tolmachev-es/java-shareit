@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@EntityScan(basePackages = {"ru.practicum.shareIt"})
+@EntityScan(basePackages = {"ru.practicum.shareit"})
 class DBItemDaoTest {
     private ItemServiceImpl itemService;
     private ItemRepository itemRepository;
