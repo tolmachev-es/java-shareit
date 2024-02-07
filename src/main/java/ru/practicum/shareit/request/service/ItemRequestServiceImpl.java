@@ -46,7 +46,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Set<ItemRequestDto> get(Long userId) {
         userDao.getUserById(userId);
-        Map<Long, Set<ItemEntity>> items = getItem(itemRepository.getItemEntitiesByItemRequestNotNull());
+        Map<Long, List<ItemEntity>> items = getItem(itemRepository.getItemEntitiesByItemRequestNotNull());
         return itemRequestRepository.findItemRequestEntitiesByRequestor_Id(userId)
                 .stream()
                 .map(ItemRequestMapper.ITEM_REQUEST_MAPPER::fromEntity)
@@ -64,7 +64,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (from < 0 || size < 0) {
             throw new InvalidParameterException("Неверно указаны параметры отображения");
         } else {
-            Map<Long, Set<ItemEntity>> items = getItem(itemRepository.getItemEntitiesByItemRequestNotNull());
+            Map<Long, List<ItemEntity>> items = getItem(itemRepository.getItemEntitiesByItemRequestNotNull());
             Pageable pageable = PageRequest.of(from, size);
             return itemRequestRepository.findAllByRequestor_IdNotOrderByCreated(userId, pageable)
                     .map(ItemRequestMapper.ITEM_REQUEST_MAPPER::fromEntity)
@@ -101,14 +101,16 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
     }
 
-    private Map<Long, Set<ItemEntity>> getItem(Set<ItemEntity> itemEntities) {
-        Map<Long, Set<ItemEntity>> result = new HashMap<>();
+    private Map<Long, List<ItemEntity>> getItem(Set<ItemEntity> itemEntities) {
+        Map<Long, List<ItemEntity>> result = new HashMap<>();
         for (ItemEntity item :
                 itemEntities) {
             if (result.containsKey(item.getItemRequest().getId())) {
-                result.get(item.getItemRequest().getId()).add(item);
+                List<ItemEntity> oldList = new ArrayList<>(result.get(item.getItemRequest().getId()));
+                oldList.add(item);
+                result.put(item.getItemRequest().getId(), oldList);
             } else {
-                result.put(item.getItemRequest().getId(), Set.of(item));
+                result.put(item.getItemRequest().getId(), List.of(item));
             }
         }
         return result;
