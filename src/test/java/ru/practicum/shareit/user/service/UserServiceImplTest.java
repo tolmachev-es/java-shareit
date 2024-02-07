@@ -23,8 +23,8 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringJUnitConfig
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DataJpaTest
-@EntityScan(basePackages = {"ru.practicum.shareIt"})
-@ComponentScan(basePackages = {"ru.practicum.shareIt"})
+@EntityScan(basePackages = {"ru.practicum.shareit"})
+@ComponentScan(basePackages = {"ru.practicum.shareit"})
 class UserServiceImplTest {
     private final UserServiceImpl userService;
     private final TestEntityManager testEntityManager;
