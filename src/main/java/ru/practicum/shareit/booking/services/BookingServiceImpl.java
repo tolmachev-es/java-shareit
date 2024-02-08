@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.services;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.HeadExeptions.AlreadyExistException;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.booking.dao"})
 public class BookingServiceImpl implements BookingService {
     private final UserDao userDao;
     private final ItemDao itemDao;

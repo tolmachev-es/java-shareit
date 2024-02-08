@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
@@ -29,14 +27,11 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@Transactional
 @SpringJUnitConfig
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DataJpaTest
-@EntityScan(basePackages = {"ru.practicum.shareit.user.dao",
-        "ru.practicum.shareit.item.dao.item", "ru.practicum.shareit.request.dao",
-        "ru.practicum.shareit.booking.dao", "ru.practicum.shareit.item.dao.comment"})
 @ComponentScan(basePackages = {"ru.practicum.shareit"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)//без classMode отказывается один из тестов пассить
 class BookingServiceImplTest {
     private final BookingService bookingService;
     private final TestEntityManager testEntityManager;
@@ -47,7 +42,6 @@ class BookingServiceImplTest {
     private final BookingRepository bookingRepository;
 
     @Test
-    @DirtiesContext
     void createAndApprove() {
         userOwner = new UserEntity();
         userOwner.setName("Owner");
@@ -86,7 +80,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @DirtiesContext
     void testSorting() {
         userOwner = new UserEntity();
         userOwner.setName("Owner");

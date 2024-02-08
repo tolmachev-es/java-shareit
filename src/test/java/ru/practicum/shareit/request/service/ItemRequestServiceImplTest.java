@@ -3,7 +3,6 @@ package ru.practicum.shareit.request.service;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +30,6 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringJUnitConfig
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DataJpaTest
-@EntityScan(basePackages = {"ru.practicum.shareit"})
 @ComponentScan(basePackages = {"ru.practicum.shareit"})
 class ItemRequestServiceImplTest {
     private final ItemRequestServiceImpl itemRequestService;

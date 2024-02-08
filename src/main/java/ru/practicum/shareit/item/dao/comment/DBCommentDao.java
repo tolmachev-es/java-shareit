@@ -1,14 +1,12 @@
 package ru.practicum.shareit.item.dao.comment;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Component
 @AllArgsConstructor
-@EnableJpaRepositories(basePackages = "ru.practicum.shareit.dao.comment")
 public class DBCommentDao implements CommentDao {
     private final CommentRepository commentRepository;
 

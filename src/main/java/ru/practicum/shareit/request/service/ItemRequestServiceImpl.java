@@ -3,7 +3,6 @@ package ru.practicum.shareit.request.service;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@EnableJpaRepositories(basePackages = {"ru.practicum.shareit.request.dao", "ru.practicum.shareit.item.dao"})
 public class ItemRequestServiceImpl implements ItemRequestService {
     private UserDao userDao;
     private ItemRequestRepository itemRequestRepository;
@@ -67,9 +65,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             Map<Long, List<ItemEntity>> items = getItem(itemRepository.getItemEntitiesByItemRequestNotNull());
             Pageable pageable = PageRequest.of(from, size);
             return itemRequestRepository.findAllByRequestor_IdNotOrderByCreated(userId, pageable)
+                    .stream()
                     .map(ItemRequestMapper.ITEM_REQUEST_MAPPER::fromEntity)
                     .map(ItemRequestMapper.ITEM_REQUEST_MAPPER::toDto)
-                    .stream()
                     .peek(itemRequestDto -> itemRequestDto.setItems(items.containsKey(itemRequestDto.getId())
                             ? items.get(itemRequestDto.getId())
                             .stream()

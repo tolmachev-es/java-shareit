@@ -3,13 +3,11 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -31,11 +29,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
-@Transactional
 @SpringJUnitConfig
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DataJpaTest
-@EntityScan(basePackages = {"ru.practicum.shareit"})
 @ComponentScan(basePackages = {"ru.practicum.shareit"})
 class ItemServiceImplTest {
     private final ItemService itemService;

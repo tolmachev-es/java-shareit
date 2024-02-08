@@ -3,8 +3,6 @@ package ru.practicum.shareit.item.dao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
 import ru.practicum.shareit.booking.dao.BookingRepository;
@@ -29,8 +27,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@EntityScan(basePackages = {"ru.practicum.shareit"})
 class DBItemDaoTest {
     private ItemServiceImpl itemService;
     private ItemRepository itemRepository;
