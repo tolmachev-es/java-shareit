@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -12,10 +11,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Qualifier("DBUserDao")
     private final UserDao userDao;
 
     @Override

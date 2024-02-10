@@ -13,6 +13,8 @@ import ru.practicum.shareit.booking.model.validationGroups.BookingOnCreate;
 import ru.practicum.shareit.booking.services.BookingService;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Set;
 
 /**
@@ -22,6 +24,7 @@ import java.util.Set;
 @RequestMapping(path = "/bookings")
 @AllArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
     public final BookingService bookingService;
 
@@ -69,10 +72,12 @@ public class BookingController {
             @ApiResponse(responseCode = "200", description = "Successful get"),
             @ApiResponse(responseCode = "404", description = "Unsupported method")
     })
-    public Set<BookingDtoResponse> getByBooker(@RequestParam(required = false, defaultValue = "ALL") String state,
-                                               @NotNull @RequestHeader("X-Sharer-User-Id") long userId) {
+    public Set<BookingDtoResponse> getByBooker(@NotNull @RequestHeader("X-Sharer-User-Id") long userId,
+                                               @RequestParam(required = false, defaultValue = "ALL") String state,
+                                               @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                               @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Получен запрос на получение всех бронирований пользователя {}", userId);
-        return bookingService.getByBooker(state, userId);
+        return bookingService.getByBooker(state, userId, from, size);
     }
 
     @GetMapping("/owner")
@@ -82,9 +87,11 @@ public class BookingController {
             @ApiResponse(responseCode = "404", description = "Unsupported method")
     })
     public Set<BookingDtoResponse> getByOwner(@RequestParam(required = false, defaultValue = "ALL") String state,
-                                              @NotNull @RequestHeader("X-Sharer-User-Id") long userId) {
+                                              @NotNull @RequestHeader("X-Sharer-User-Id") long userId,
+                                              @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                              @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на получение бронирований по владельцу с id {}", userId);
-        return bookingService.getByOwner(state, userId);
+        return bookingService.getByOwner(state, userId, from, size);
     }
 
 }

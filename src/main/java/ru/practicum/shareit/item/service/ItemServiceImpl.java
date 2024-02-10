@@ -1,44 +1,50 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.booking.dao.BookingEntity;
 import ru.practicum.shareit.booking.dao.BookingRepository;
-import ru.practicum.shareit.booking.errors.NotFoundBookingByUser;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dao.CommentDao;
-import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dao.comment.CommentDao;
+import ru.practicum.shareit.item.dao.item.ItemDao;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.mappers.ItemRequestMapper;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dao.UserEntity;
 import ru.practicum.shareit.user.mappers.UserMapper;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    @Qualifier("DBItemDao")
     private final ItemDao itemDao;
-    @Qualifier("DBUserDao")
     private final UserDao userDao;
     private final CommentDao commentDao;
-    private final BookingRepository bookingRepository;
+    private final BookingRepository bookingRepositoryFromItemService;
+    private final ItemRequestRepository itemRequestRepositoryFromItemService;
 
     @Override
     public ItemDto create(ItemDto item, long userId) {
         Item newItem = ItemMapper.ITEM_MAPPER.fromDto(item);
         newItem.setOwner(UserMapper.USER_MAPPER.fromEntity(userDao.getUserById(userId)));
+        newItem.setItemRequest(item.getRequestId() != null ?
+                ItemRequestMapper.ITEM_REQUEST_MAPPER.fromEntity(
+                        itemRequestRepositoryFromItemService.getById(item.getRequestId())) : null);
         Item createItem = ItemMapper.ITEM_MAPPER.fromEntity(
                 itemDao.create(ItemMapper.ITEM_MAPPER.toEntity(newItem)));
         return ItemMapper.ITEM_MAPPER.toDto(createItem);
@@ -67,9 +73,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Set<ItemDto> getAllByOwner(Long userId) {
+    public Set<ItemDto> getAllByOwner(Long userId, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         UserEntity user = userDao.getUserById(userId);
-        Set<Item> items = itemDao.getByOwner(user).stream()
+        Set<Item> items = itemDao.getByOwner(user, pageable).stream()
                 .map(ItemMapper.ITEM_MAPPER::fromEntity)
                 .collect(Collectors.toSet());
         return items.stream()
@@ -80,8 +87,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Set<ItemDto> search(String text) {
-        Set<Item> items = itemDao.search(text).stream()
+    public Set<ItemDto> search(String text, Integer from, Integer size) {
+        if (text.isBlank()) {
+            return new HashSet<>();
+        }
+        Pageable pageable = PageRequest.of(from / size, size);
+        Set<Item> items = itemDao.search(text, pageable).stream()
                 .map(ItemMapper.ITEM_MAPPER::fromEntity)
                 .collect(Collectors.toSet());
         return items.stream()
@@ -91,7 +102,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
-        Optional<BookingEntity> booking = bookingRepository
+        Optional<BookingEntity> booking = bookingRepositoryFromItemService
                 .findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
         if (booking.isPresent()) {
             Comment newComment = CommentMapper.COMMENT_MAPPER.fromDto(commentDto);
@@ -102,15 +113,15 @@ public class ItemServiceImpl implements ItemService {
                     CommentMapper.COMMENT_MAPPER.fromEntity(
                             commentDao.create(CommentMapper.COMMENT_MAPPER.toEntity(newComment))));
         } else {
-            throw new NotFoundBookingByUser("По параметрам не найдено бронирование");
+            throw new InvalidParameterException(String.format("Бронирование вещи с id %s не найдено", itemId));
         }
     }
 
     private ItemDto addBooking(ItemDto itemDto) {
-        Optional<BookingEntity> previousBooking = bookingRepository
+        Optional<BookingEntity> previousBooking = bookingRepositoryFromItemService
                 .findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
                         itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
-        Optional<BookingEntity> nextBooking = bookingRepository
+        Optional<BookingEntity> nextBooking = bookingRepositoryFromItemService
                 .findTopBookingEntitiesByItem_IdAndStartAfterAndStatusOrderByStartAsc(
                         itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
         previousBooking.ifPresent(bookingEntity -> itemDto.setLastBooking(

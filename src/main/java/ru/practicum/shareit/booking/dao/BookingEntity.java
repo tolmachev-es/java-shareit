@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking.dao;
 
 import lombok.Data;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dao.ItemEntity;
+import ru.practicum.shareit.item.dao.item.ItemEntity;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import javax.persistence.*;

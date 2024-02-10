@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,6 +24,7 @@ import java.util.Set;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class ItemController {
     private final ItemService itemService;
 
@@ -72,9 +72,11 @@ public class ItemController {
             @ApiResponse(responseCode = "200", description = "Items get"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public Set<ItemDto> getAll(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Set<ItemDto> getAll(@NotNull @RequestHeader("X-Sharer-User-Id") Long userId,
+                               @RequestParam(defaultValue = "0") Integer from,
+                               @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос на получение всех вещей пользователя {}", userId);
-        return itemService.getAllByOwner(userId);
+        return itemService.getAllByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
@@ -82,14 +84,11 @@ public class ItemController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Items found")
     })
-    public Set<ItemDto> search(@RequestParam String text) {
-        if (text.isBlank()) {
-            log.info("Получен запрос на поиск с пустым значением в запросе");
-            return new HashSet<>();
-        } else {
-            log.info("Получен запрос на поиск с текстом {}", text);
-            return itemService.search(text);
-        }
+    public Set<ItemDto> search(@RequestParam String text,
+                               @RequestParam(defaultValue = "0") Integer from,
+                               @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен запрос на поиск с текстом {}", text);
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

@@ -1,34 +1,45 @@
 package ru.practicum.shareit.booking.dao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Set;
 
+@Repository
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
-    Set<BookingEntity> findBookingEntitiesByBooker_Id(Long userid);
+    Page<BookingEntity> findBookingEntitiesByBooker_IdOrderByIdDesc(
+            Long userid, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(
-            Long userId, LocalDateTime now1, LocalDateTime now2);
+    Page<BookingEntity> findBookingEntitiesByBooker_IdAndStartBeforeAndEndIsAfter(
+            Long userId, LocalDateTime now1, LocalDateTime now2, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndEndBefore(Long userid, LocalDateTime now);
+    Page<BookingEntity> findBookingEntitiesByBooker_IdAndEndBefore(
+            Long userid, LocalDateTime now, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStartAfter(Long userid, LocalDateTime now);
+    Page<BookingEntity> findBookingEntitiesByBooker_IdAndStartAfter(
+            Long userid, LocalDateTime now, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByBooker_IdAndStatus(Long userid, BookingStatus bookingStatus);
+    Page<BookingEntity> findBookingEntitiesByBooker_IdAndStatus(
+            Long userid, BookingStatus bookingStatus, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerId(Long itemOwnerId);
+    Page<BookingEntity> findBookingEntitiesByItem_OwnerIdOrderByIdDesc(
+            Long itemOwnerId, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(
-            Long itemOwnerId, LocalDateTime start, LocalDateTime end);
+    Page<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartBeforeAndEndAfter(
+            Long itemOwnerId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndEndBefore(Long itemOwnerId, LocalDateTime end);
+    Page<BookingEntity> findBookingEntitiesByItem_OwnerIdAndEndBefore(
+            Long itemOwnerId, LocalDateTime end, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartAfter(Long itemOwnerId, LocalDateTime start);
+    Page<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStartAfter(
+            Long itemOwnerId, LocalDateTime start, Pageable pageable);
 
-    Set<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStatus(Long itemOwnerId, BookingStatus status);
+    Page<BookingEntity> findBookingEntitiesByItem_OwnerIdAndStatus(
+            Long itemOwnerId, BookingStatus status, Pageable pageable);
 
     Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndStartBeforeAndStatusOrderByEndDesc(
             Long itemId, LocalDateTime end, BookingStatus status);
@@ -38,4 +49,5 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
 
     Optional<BookingEntity> findTopBookingEntitiesByItem_IdAndBooker_IdAndEndBefore(
             Long itemId, Long bookerId, LocalDateTime end);
+
 }

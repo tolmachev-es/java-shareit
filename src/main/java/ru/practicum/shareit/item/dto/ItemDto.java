@@ -24,6 +24,7 @@ public class ItemDto {
     private String description;
     @NotNull(groups = ItemOnCreate.class)
     private Boolean available;
+    private Long requestId;
     private BookingDtoByItemRequest lastBooking;
     private BookingDtoByItemRequest nextBooking;
     private Set<CommentDto> comments;
