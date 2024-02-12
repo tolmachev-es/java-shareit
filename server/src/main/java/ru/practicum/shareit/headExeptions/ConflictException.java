@@ -1,4 +1,4 @@
-package ru.practicum.shareit.HeadExeptions;
+package ru.practicum.shareit.headExeptions;
 
 public class ConflictException extends RuntimeException {
     public ConflictException(String message) {

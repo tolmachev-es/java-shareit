@@ -1,4 +1,4 @@
-package ru.practicum.shareit.HeadExeptions.handler;
+package ru.practicum.shareit.headExeptions.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,10 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.practicum.shareit.HeadExeptions.AlreadyExistException;
-import ru.practicum.shareit.HeadExeptions.ConflictException;
-import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
-import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
+import ru.practicum.shareit.headExeptions.InvalidParameterException;
 
 import javax.validation.ValidationException;
 import java.util.HashMap;
@@ -33,31 +30,10 @@ public class MainErrorHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler(ObjectNotFound.class)
-    public ResponseEntity<Map<String, String>> handle(final ObjectNotFound objectNotFound) {
-        return new ResponseEntity<>(Map.of("Not Found",
-                objectNotFound.getMessage()),
-                HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(AlreadyExistException.class)
-    public ResponseEntity<Map<String, String>> handle(final AlreadyExistException alreadyExistException) {
-        return new ResponseEntity<>(Map.of("Already exist",
-                alreadyExistException.getMessage()),
-                HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(InvalidParameterException.class)
     public ResponseEntity<Map<String, String>> handle(final InvalidParameterException invalidParameterException) {
         return new ResponseEntity<>(Map.of("error",
                 invalidParameterException.getMessage()),
                 HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<Map<String, String>> handle(final ConflictException conflictException) {
-        return new ResponseEntity<>(Map.of("error",
-                conflictException.getMessage()),
-                HttpStatus.CONFLICT);
     }
 }

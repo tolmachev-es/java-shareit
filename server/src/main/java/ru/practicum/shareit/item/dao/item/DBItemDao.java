@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
-import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
+import ru.practicum.shareit.headExeptions.InvalidParameterException;
+import ru.practicum.shareit.headExeptions.ObjectNotFound;
 import ru.practicum.shareit.user.dao.UserEntity;
 
 import java.util.Objects;

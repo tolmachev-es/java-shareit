@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.HeadExeptions.ConflictException;
-import ru.practicum.shareit.HeadExeptions.ObjectNotFound;
+import ru.practicum.shareit.headExeptions.ConflictException;
+import ru.practicum.shareit.headExeptions.ObjectNotFound;
 
 import java.util.Optional;
 import java.util.Set;

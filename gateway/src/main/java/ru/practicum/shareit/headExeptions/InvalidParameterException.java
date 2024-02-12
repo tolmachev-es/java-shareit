@@ -1,4 +1,4 @@
-package ru.practicum.shareit.HeadExeptions;
+package ru.practicum.shareit.headExeptions;
 
 public class InvalidParameterException extends RuntimeException {
     public InvalidParameterException(String message) {

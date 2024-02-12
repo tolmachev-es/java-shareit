@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.HeadExeptions.InvalidParameterException;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.dto.validationGroups.BookingOnCreate;
+import ru.practicum.shareit.headExeptions.InvalidParameterException;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
